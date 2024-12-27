@@ -15,7 +15,7 @@ import java.io.File;
 import java.io.IOException;
 
 @Controller
-@RequestMapping("/spring")
+@RequestMapping
 public class ImgUploadController {
     private static final Logger log = LoggerFactory.getLogger(ImgUploadController.class);
 
@@ -23,15 +23,16 @@ public class ImgUploadController {
     private String fileDir;
 
     @GetMapping("/upload")
-    public String newFile() {
-        return "/upload-form";
+    public String newFile(Model model, ImgUploadRequest request) {
+        model.addAttribute("ImgUploadRequest", request);
+        return "/upload-img";
     }
 
-    @PostMapping("/upload")
-    public String saveFile(@RequestParam String itemName,
-                           @RequestParam MultipartFile file, HttpServletRequest request) throws IOException {
-        log.info("request={}", request);
-        log.info("itemName={}", itemName);
+    @PostMapping("/upload-file")
+    public String saveFile(@RequestBody ImgUploadRequest request) throws IOException {
+
+        service.uploadImg(ImgUploadDto.from(request));
+        MultipartFile file = request.getFile();
         log.info("multipartFile={}", file);
 
         if (!file.isEmpty()) {
