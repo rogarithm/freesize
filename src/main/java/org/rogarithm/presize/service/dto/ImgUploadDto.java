@@ -12,7 +12,7 @@ public class ImgUploadDto {
 
     public ImgUploadDto(MultipartFile file, String height, String width) {
         try {
-            this.img = Base64.getEncoder().encodeToString(file.getBytes());
+            this.img = encodeWithPadding(Base64.getEncoder().encodeToString(file.getBytes()));
         } catch (Exception e) {
             throw new RuntimeException("Failed to encode image", e);
         }
@@ -34,5 +34,13 @@ public class ImgUploadDto {
 
     public int getWidth() {
         return width;
+    }
+
+    private String encodeWithPadding(String base64) {
+        int paddingLength = 4 - (base64.length() % 4);
+        if (paddingLength < 4) {
+            return base64 + "=".repeat(paddingLength);
+        }
+        return base64;
     }
 }
