@@ -1,0 +1,20 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h2>이미지 등록 폼</h2>
+    </div>
+    <h4 class="mb-3">이미지 추가</h4>
+    <form action="/upload" th:object="${ImgUploadRequest}" method="post" enctype="multipart/form-data">
+        <ul>높이 <input type="text" th:field="*{height}"></ul>
+        <ul>너비 <input type="text" th:field="*{width}"></ul>
+        <ul>파일 <input type="file" th:field="*{file}"></ul>
+        <input type="submit"/>
+    </form>
+</div>
+</body>
+</html>

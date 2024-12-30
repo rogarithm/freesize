@@ -1,37 +1,45 @@
 package org.rogarithm.presize.web;
 
-import jakarta.servlet.http.HttpServletRequest;
+import org.rogarithm.presize.service.ImgUploadService;
+import org.rogarithm.presize.service.dto.ImgUploadDto;
+import org.rogarithm.presize.web.request.ImgUploadRequest;
+import org.rogarithm.presize.web.response.ImgUploadResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 
 @Controller
-@RequestMapping("/spring")
+@RequestMapping
 public class ImgUploadController {
     private static final Logger log = LoggerFactory.getLogger(ImgUploadController.class);
 
     @Value("${file.dir}")
     private String fileDir;
 
-    @GetMapping("/upload")
-    public String newFile() {
-        return "/upload-form";
+    private final ImgUploadService service;
+
+    public ImgUploadController(ImgUploadService service) {
+        this.service = service;
     }
 
-    @PostMapping("/upload")
-    public String saveFile(@RequestParam String itemName,
-                           @RequestParam MultipartFile file, HttpServletRequest request) throws IOException {
-        log.info("request={}", request);
-        log.info("itemName={}", itemName);
+    @GetMapping("/upload")
+    public String newFile(Model model, ImgUploadRequest request) {
+        model.addAttribute("ImgUploadRequest", request);
+        return "/upload-img";
+    }
+
+    @PostMapping("/upload-file")
+    public String saveFile(@RequestBody ImgUploadRequest request) throws IOException {
+
+        service.uploadImg(ImgUploadDto.from(request));
+        MultipartFile file = request.getFile();
         log.info("multipartFile={}", file);
 
         if (!file.isEmpty()) {
@@ -41,5 +49,12 @@ public class ImgUploadController {
         }
 
         return "/upload-form";
+    }
+
+    @PostMapping("/upload")
+    public ImgUploadResponse uploadImg(@ModelAttribute("ImgUploadRequest") ImgUploadRequest request) throws IOException {
+        ImgUploadDto from = new ImgUploadDto(request.getFile(), "1240", "1240");
+        ImgUploadResponse response = service.uploadImg(from);
+        return response;
     }
 }
