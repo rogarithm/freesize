@@ -26,10 +26,14 @@ public class ImgUploadService {
         Mono<ImgUploadResponse> response = retrieve.bodyToMono(ImgUploadResponse.class);
         ImgUploadResponse imgUploadResponse = response.block();
 
-        if (imgUploadResponse != null) {
-            return new ImgUploadResponse(imgUploadResponse.getResizedImgAsString());
+        if (imgUploadResponse == null) {
+            throw new RuntimeException("Failed to retrieve a response from the AI model");
         }
 
-        throw new RuntimeException("Failed to retrieve a valid response from AI model");
+        if (imgUploadResponse.isSuccess()) {
+            return imgUploadResponse;
+        }
+
+        throw new RuntimeException("Error from AI model: " + imgUploadResponse.getMessage());
     }
 }
