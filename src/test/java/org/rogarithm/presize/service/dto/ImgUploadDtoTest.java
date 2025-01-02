@@ -9,12 +9,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class ImgUploadDtoTest {
 
     @Test
-    public void t() throws IOException, URISyntaxException {
+    public void check_whether_jpeg_content_is_valid() throws IOException, URISyntaxException {
         URL res = getClass().getClassLoader().getResource("encode_result2");
         String base64Image = new String(Files.readAllBytes(Paths.get(res.toURI())));
 
