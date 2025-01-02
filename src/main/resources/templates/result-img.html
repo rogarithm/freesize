@@ -1,0 +1,44 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Image Result</title>
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h2>변환된 이미지</h2>
+    </div>
+    <div class="image-container">
+        <div class="original-image">
+            <img th:src="'data:image;base64,' + ${originalImg}" alt="원본 이미지"/>
+        </div>
+        <div class="manipulated-image">
+            <img th:src="'data:image;base64,' + ${resizedImg}" alt="변환된 이미지"/>
+        </div>
+    </div>
+    <a href="/upload">다른 이미지 변환하기</a>
+</div>
+</body>
+</html>
+
+<style>
+    .image-container {
+        display: flex;
+        height: 100vh;
+    }
+
+    .original-image, .manipulated-image {
+        flex: 1; /* 각 클래스를 갖는 태그가 50%의 너비를 갖는다 */
+        display: flex;
+        justify-content: center; /* 수평으로 중앙 정렬 */
+        align-items: center; /* 수직으로 중앙 정렬 */
+        overflow: hidden;
+    }
+
+    .original-image img, .manipulated-image img {
+        max-width: 100%; /* 이미지 너비를 container 안에 맞춘다 */
+        max-height: 100%; /* 이미지 높이를 container 안에 맞춘다 */
+        object-fit: contain;
+    }
+</style>
