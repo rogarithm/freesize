@@ -1,0 +1,18 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Image Result</title>
+</head>
+<body>
+<div class="container">
+    <div class="py-5 text-center">
+        <h2>Processed Image</h2>
+    </div>
+    <div>
+        <img th:src="'data:image;base64,' + ${resizedImg}" alt="Processed Image"/>
+    </div>
+    <a href="/upload">다른 이미지 변환하기</a>
+</div>
+</body>
+</html>

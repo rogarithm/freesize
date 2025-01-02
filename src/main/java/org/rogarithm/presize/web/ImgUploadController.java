@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +36,12 @@ public class ImgUploadController {
         return "/upload-img";
     }
 
+    @GetMapping("/result")
+    public String showResult(@ModelAttribute("resizedImg") String resizedImg, Model model) {
+        model.addAttribute("resizedImg", resizedImg);
+        return "/result-img";
+    }
+
     @PostMapping("/upload-file")
     public String saveFile(@RequestBody ImgUploadRequest request) throws IOException {
 
@@ -52,9 +59,16 @@ public class ImgUploadController {
     }
 
     @PostMapping("/upload")
-    public ImgUploadResponse uploadImg(@ModelAttribute("ImgUploadRequest") ImgUploadRequest request) throws IOException {
+    public String uploadImg(@ModelAttribute("ImgUploadRequest") ImgUploadRequest request, RedirectAttributes redirectAttributes) {
         ImgUploadDto from = new ImgUploadDto(request.getFile(), "1240", "1240");
         ImgUploadResponse response = service.uploadImg(from);
-        return response;
+
+        if (response.isSuccess()) {
+            redirectAttributes.addFlashAttribute("resizedImg", response.getResizedImg());
+            return "redirect:/result";
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Image processing failed: " + response.getMessage());
+            return "redirect:/upload";
+        }
     }
 }
