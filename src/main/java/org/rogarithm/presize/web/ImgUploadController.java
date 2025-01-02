@@ -64,6 +64,7 @@ public class ImgUploadController {
         ImgUploadResponse response = service.uploadImg(from);
 
         if (response.isSuccess()) {
+            redirectAttributes.addFlashAttribute("originalImg", from.getImg());
             redirectAttributes.addFlashAttribute("resizedImg", response.getResizedImg());
             return "redirect:/result";
         } else {
