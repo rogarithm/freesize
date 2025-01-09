@@ -1,5 +1,6 @@
 package org.rogarithm.presize.web.response;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.nio.charset.StandardCharsets;
@@ -11,7 +12,11 @@ public class ImgUploadResponse {
     private final String resizedImg;
     private final String message;
 
-    public ImgUploadResponse(int code, @JsonProperty("resized_img") String resizedImg, String message) {
+    @JsonCreator
+    public ImgUploadResponse(
+            @JsonProperty("code") int code,
+            @JsonProperty("resized_img") String resizedImg,
+            @JsonProperty("message") String message) {
         this.code = code;
         this.resizedImg = resizedImg;
         this.message = message;
