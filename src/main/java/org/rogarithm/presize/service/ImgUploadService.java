@@ -36,14 +36,18 @@ public class ImgUploadService {
                                 .maxInMemorySize(20 * 1024 * 1024))
                         .build()).
                 build();
+
         WebClient.ResponseSpec retrieve = webClient.post()
                 .uri(aiModelUrl)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
                 .retrieve();
+
         Mono<ImgUploadResponse> response = retrieve.bodyToMono(ImgUploadResponse.class);
+
         ImgUploadResponse imgUploadResponse = null;
+
         try {
             log.debug("Attempting to block response...");
             imgUploadResponse = response.block();
