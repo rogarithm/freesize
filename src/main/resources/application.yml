@@ -20,3 +20,8 @@ file:
 ai:
   model:
     url: ${AI_MODEL_URL}
+logging:
+  file:
+    name: logs/app.log
+  level:
+    root: debug
