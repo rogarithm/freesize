@@ -29,13 +29,13 @@ public class ImgUploadController {
         return "upload-img";
     }
 
-    @GetMapping("/result")
+    @GetMapping("/upscale")
     public String showResult(@ModelAttribute("resizedImg") String resizedImg, Model model) {
         model.addAttribute("resizedImg", resizedImg);
-        return "result-img";
+        return "upscale-result";
     }
 
-    @PostMapping("/upload")
+    @PostMapping("/upscale")
     public String uploadImg(@ModelAttribute("ImgUploadRequest") ImgUploadRequest request, RedirectAttributes redirectAttributes) {
         ImgUploadDto from = new ImgUploadDto(request.getFile(), "1240", "1240");
         ImgUploadResponse response = service.uploadImg(from);
@@ -43,7 +43,7 @@ public class ImgUploadController {
         if (response.isSuccess()) {
             redirectAttributes.addFlashAttribute("originalImg", from.getImg());
             redirectAttributes.addFlashAttribute("resizedImg", response.getResizedImg());
-            return "redirect:result";
+            return "redirect:upscale";
         } else {
             redirectAttributes.addFlashAttribute("error", "Image processing failed: " + response.getMessage());
             return "redirect:upload";
