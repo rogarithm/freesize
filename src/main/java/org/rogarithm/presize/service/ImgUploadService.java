@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -37,6 +38,8 @@ public class ImgUploadService {
                 build();
         WebClient.ResponseSpec retrieve = webClient.post()
                 .uri(aiModelUrl)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
                 .retrieve();
         Mono<ImgUploadResponse> response = retrieve.bodyToMono(ImgUploadResponse.class);
