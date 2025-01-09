@@ -45,13 +45,19 @@ public class ImgUploadService {
         Mono<ImgUploadResponse> response = retrieve.bodyToMono(ImgUploadResponse.class);
         ImgUploadResponse imgUploadResponse = null;
         try {
+            log.debug("Attempting to block response...");
             imgUploadResponse = response.block();
+            log.debug("Successfully retrieved response");
         } catch (WebClientResponseException e) {
+            log.error("WebClientResponseException: ", e);
+            log.error("Full error cause: ", e.getCause());
             String errorMsg = e.getCause().getMessage();
-            String problematicSize = errorMsg.split(":")[1].replaceAll(" ", "");
-            log.error("Current response's buffer size({}) is higher than current max codec size({}).\n" +
-                            "To resolve, edit max codec size higher than {} both in WebClient configuration and application properties!",
-                    problematicSize, parseSizeToBytes(maxInMemorySize), problematicSize);
+            if (errorMsg.split(":").length >= 2) {
+                String problematicSize = errorMsg.split(":")[1].replaceAll(" ", "");
+                log.error("Current response's buffer size({}) is higher than current max codec size({}).\n" +
+                                "To resolve, edit max codec size higher than {} both in WebClient configuration and application properties!",
+                        problematicSize, parseSizeToBytes(maxInMemorySize), problematicSize);
+            }
         }
 
         if (imgUploadResponse == null) {
