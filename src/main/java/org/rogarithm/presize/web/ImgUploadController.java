@@ -33,13 +33,13 @@ public class ImgUploadController {
     @GetMapping("/upload")
     public String newFile(Model model, ImgUploadRequest request) {
         model.addAttribute("ImgUploadRequest", request);
-        return "/upload-img";
+        return "upload-img";
     }
 
     @GetMapping("/result")
     public String showResult(@ModelAttribute("resizedImg") String resizedImg, Model model) {
         model.addAttribute("resizedImg", resizedImg);
-        return "/result-img";
+        return "result-img";
     }
 
     @PostMapping("/upload-file")
@@ -55,7 +55,7 @@ public class ImgUploadController {
             file.transferTo(new File(fullPath));
         }
 
-        return "/upload-form";
+        return "upload-form";
     }
 
     @PostMapping("/upload")
@@ -66,10 +66,10 @@ public class ImgUploadController {
         if (response.isSuccess()) {
             redirectAttributes.addFlashAttribute("originalImg", from.getImg());
             redirectAttributes.addFlashAttribute("resizedImg", response.getResizedImg());
-            return "redirect:/result";
+            return "redirect:result";
         } else {
             redirectAttributes.addFlashAttribute("error", "Image processing failed: " + response.getMessage());
-            return "redirect:/upload";
+            return "redirect:upload";
         }
     }
 }
