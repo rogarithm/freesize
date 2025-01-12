@@ -17,7 +17,9 @@ spring:
     max-in-memory-size: 20MB
 ai:
   model:
-    url: ${AI_MODEL_URL}
+    url:
+      upscale: ${AI_MODEL_URL_UPSCALE}
+      uncrop: ${AI_MODEL_URL_UNCROP}
 logging:
   file:
     name: logs/app.log
