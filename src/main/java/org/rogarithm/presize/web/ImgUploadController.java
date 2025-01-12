@@ -2,6 +2,7 @@ package org.rogarithm.presize.web;
 
 import org.rogarithm.presize.service.ImgUploadService;
 import org.rogarithm.presize.service.dto.ImgUploadDto;
+import org.rogarithm.presize.web.request.ImgUncropRequest;
 import org.rogarithm.presize.web.request.ImgUploadRequest;
 import org.rogarithm.presize.web.response.ImgUploadResponse;
 import org.slf4j.Logger;
@@ -23,8 +24,9 @@ public class ImgUploadController {
     }
 
     @GetMapping("/upload")
-    public String newFile(Model model, ImgUploadRequest request) {
+    public String newFile(Model model, ImgUploadRequest request, ImgUncropRequest uncropRequest) {
         model.addAttribute("ImgUploadRequest", request);
+        model.addAttribute("ImgUncropRequest", uncropRequest);
         return "upload-img";
     }
 
