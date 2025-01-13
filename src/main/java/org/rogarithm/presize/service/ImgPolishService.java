@@ -30,6 +30,7 @@ public class ImgPolishService {
     @Autowired
     private WebClient webClient;
 
+    @Transactional
     public ImgUpscaleResponse uploadImg(ImgUpscaleDto dto) {
         WebClient.ResponseSpec retrieve = webClient.post()
                 .uri(upscaleUrl)
