@@ -46,7 +46,7 @@ public class ImgPolishController {
 
     @PostMapping("/upscale")
     public String uploadImg(@ModelAttribute("ImgUpscaleRequest") ImgUpscaleRequest request, RedirectAttributes redirectAttributes) {
-        ImgUpscaleDto from = new ImgUpscaleDto(request.getFile(), "1240", "1240");
+        ImgUpscaleDto from = new ImgUpscaleDto(request.getFile(), request.getHeight(), request.getWidth());
         ImgUpscaleResponse response = service.uploadImg(from);
 
         if (response.isSuccess()) {
