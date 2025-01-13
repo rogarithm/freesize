@@ -1,12 +1,12 @@
 package org.rogarithm.presize.web;
 
-import org.rogarithm.presize.service.ImgUploadService;
+import org.rogarithm.presize.service.ImgPolishService;
 import org.rogarithm.presize.service.dto.ImgUncropDto;
-import org.rogarithm.presize.service.dto.ImgUploadDto;
+import org.rogarithm.presize.service.dto.ImgUpscaleDto;
 import org.rogarithm.presize.web.request.ImgUncropRequest;
-import org.rogarithm.presize.web.request.ImgUploadRequest;
+import org.rogarithm.presize.web.request.ImgUpscaleRequest;
 import org.rogarithm.presize.web.response.ImgUncropResponse;
-import org.rogarithm.presize.web.response.ImgUploadResponse;
+import org.rogarithm.presize.web.response.ImgUpscaleResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -16,18 +16,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping
-public class ImgUploadController {
-    private static final Logger log = LoggerFactory.getLogger(ImgUploadController.class);
+public class ImgPolishController {
+    private static final Logger log = LoggerFactory.getLogger(ImgPolishController.class);
 
-    private final ImgUploadService service;
+    private final ImgPolishService service;
 
-    public ImgUploadController(ImgUploadService service) {
+    public ImgPolishController(ImgPolishService service) {
         this.service = service;
     }
 
     @GetMapping("/upload")
-    public String newFile(Model model, ImgUploadRequest request, ImgUncropRequest uncropRequest) {
-        model.addAttribute("ImgUploadRequest", request);
+    public String newFile(Model model, ImgUpscaleRequest upscaleRequest, ImgUncropRequest uncropRequest) {
+        model.addAttribute("ImgUpscaleRequest", upscaleRequest);
         model.addAttribute("ImgUncropRequest", uncropRequest);
         return "upload-img";
     }
@@ -45,9 +45,9 @@ public class ImgUploadController {
     }
 
     @PostMapping("/upscale")
-    public String uploadImg(@ModelAttribute("ImgUploadRequest") ImgUploadRequest request, RedirectAttributes redirectAttributes) {
-        ImgUploadDto from = new ImgUploadDto(request.getFile(), "1240", "1240");
-        ImgUploadResponse response = service.uploadImg(from);
+    public String uploadImg(@ModelAttribute("ImgUpscaleRequest") ImgUpscaleRequest request, RedirectAttributes redirectAttributes) {
+        ImgUpscaleDto from = new ImgUpscaleDto(request.getFile(), "1240", "1240");
+        ImgUpscaleResponse response = service.uploadImg(from);
 
         if (response.isSuccess()) {
             redirectAttributes.addFlashAttribute("originalImg", from.getImg());

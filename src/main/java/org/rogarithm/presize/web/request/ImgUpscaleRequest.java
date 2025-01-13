@@ -2,15 +2,15 @@ package org.rogarithm.presize.web.request;
 
 import org.springframework.web.multipart.MultipartFile;
 
-public class ImgUploadRequest {
+public class ImgUpscaleRequest {
     private MultipartFile file;
     private String height;
     private String width;
 
-    public ImgUploadRequest() {
+    public ImgUpscaleRequest() {
     }
 
-    public ImgUploadRequest(MultipartFile file, String height, String width) {
+    public ImgUpscaleRequest(MultipartFile file, String height, String width) {
         this.file = file;
         this.height = height;
         this.width = width;

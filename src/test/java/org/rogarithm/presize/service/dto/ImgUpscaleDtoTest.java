@@ -9,7 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
 
-class ImgUploadDtoTest {
+class ImgUpscaleDtoTest {
 
     @Test
     public void check_whether_jpeg_content_is_valid() throws IOException, URISyntaxException {

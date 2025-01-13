@@ -1,9 +1,9 @@
 package org.rogarithm.presize.service;
 
 import org.rogarithm.presize.service.dto.ImgUncropDto;
-import org.rogarithm.presize.service.dto.ImgUploadDto;
+import org.rogarithm.presize.service.dto.ImgUpscaleDto;
 import org.rogarithm.presize.web.response.ImgUncropResponse;
-import org.rogarithm.presize.web.response.ImgUploadResponse;
+import org.rogarithm.presize.web.response.ImgUpscaleResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +17,9 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono;
 
 @Service
-public class ImgUploadService {
+public class ImgPolishService {
 
-    private static final Logger log = LoggerFactory.getLogger(ImgUploadService.class);
+    private static final Logger log = LoggerFactory.getLogger(ImgPolishService.class);
 
     @Value("${ai.model.url.upscale}")
     private String upscaleUrl;
@@ -32,7 +32,7 @@ public class ImgUploadService {
     @Autowired
     private WebClient.Builder webClientBuilder;
 
-    public ImgUploadResponse uploadImg(ImgUploadDto dto) {
+    public ImgUpscaleResponse uploadImg(ImgUpscaleDto dto) {
         WebClient webClient = webClientBuilder
                 .exchangeStrategies(ExchangeStrategies
                         .builder()
@@ -49,13 +49,13 @@ public class ImgUploadService {
                 .bodyValue(dto)
                 .retrieve();
 
-        Mono<ImgUploadResponse> response = retrieve.bodyToMono(ImgUploadResponse.class);
+        Mono<ImgUpscaleResponse> response = retrieve.bodyToMono(ImgUpscaleResponse.class);
 
-        ImgUploadResponse imgUploadResponse = null;
+        ImgUpscaleResponse imgUpscaleResponse = null;
 
         try {
             log.debug("Attempting to block response...");
-            imgUploadResponse = response.block();
+            imgUpscaleResponse = response.block();
             log.debug("Successfully retrieved response");
         } catch (WebClientResponseException e) {
             log.error("WebClientResponseException: ", e);
@@ -69,15 +69,15 @@ public class ImgUploadService {
             }
         }
 
-        if (imgUploadResponse == null) {
+        if (imgUpscaleResponse == null) {
             throw new RuntimeException("Failed to retrieve a response from the AI model");
         }
 
-        if (imgUploadResponse.isSuccess()) {
-            return imgUploadResponse;
+        if (imgUpscaleResponse.isSuccess()) {
+            return imgUpscaleResponse;
         }
 
-        throw new RuntimeException("Error from AI model: " + imgUploadResponse.getMessage());
+        throw new RuntimeException("Error from AI model: " + imgUpscaleResponse.getMessage());
     }
 
     private String parseSizeToBytes(String size) {
