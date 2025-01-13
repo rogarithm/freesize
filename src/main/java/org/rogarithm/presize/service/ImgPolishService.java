@@ -24,7 +24,6 @@ public class ImgPolishService {
     private String upscaleUrl;
     @Value("${ai.model.url.uncrop}")
     private String uncropUrl;
-
     @Value("${spring.codec.max-in-memory-size}")
     private String maxInMemorySize;
 
@@ -70,15 +69,6 @@ public class ImgPolishService {
         throw new RuntimeException("Error from AI model: " + imgUpscaleResponse.getMessage());
     }
 
-    private String parseSizeToBytes(String size) {
-        if (size.endsWith("KB")) {
-            return Integer.toString(Integer.parseInt(size.replace("KB", "").trim()) * 1024);
-        } else if (size.endsWith("MB")) {
-            return Integer.toString(Integer.parseInt(size.replace("MB", "").trim()) * 1024 * 1024);
-        }
-        return size;
-    }
-
     @Transactional
     public ImgUncropResponse uncropImg(ImgUncropDto dto) {
         WebClient.ResponseSpec retrieve = webClient.post()
@@ -117,5 +107,14 @@ public class ImgPolishService {
         }
 
         throw new RuntimeException("Error from AI model: " + imgUncropResponse.getMessage());
+    }
+
+    private String parseSizeToBytes(String size) {
+        if (size.endsWith("KB")) {
+            return Integer.toString(Integer.parseInt(size.replace("KB", "").trim()) * 1024);
+        } else if (size.endsWith("MB")) {
+            return Integer.toString(Integer.parseInt(size.replace("MB", "").trim()) * 1024 * 1024);
+        }
+        return size;
     }
 }
