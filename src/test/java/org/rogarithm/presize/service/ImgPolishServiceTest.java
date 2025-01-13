@@ -1,11 +1,10 @@
 package org.rogarithm.presize.service;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
 
-class ImgUploadServiceTest {
+class ImgPolishServiceTest {
     @Test
     public void test_parsing_DataBufferLimitException_err_msg() {
         String errorMsg = "Exceeded limit on max bytes to buffer : 2097152";

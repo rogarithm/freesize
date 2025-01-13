@@ -1,16 +1,16 @@
 package org.rogarithm.presize.service.dto;
 
-import org.rogarithm.presize.web.request.ImgUploadRequest;
+import org.rogarithm.presize.web.request.ImgUpscaleRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Base64;
 
-public class ImgUploadDto {
+public class ImgUpscaleDto {
     private String img;
     private int height;
     private int width;
 
-    public ImgUploadDto(MultipartFile file, String height, String width) {
+    public ImgUpscaleDto(MultipartFile file, String height, String width) {
         try {
             this.img = encodeWithPadding(Base64.getEncoder().encodeToString(file.getBytes()));
         } catch (Exception e) {
@@ -20,8 +20,8 @@ public class ImgUploadDto {
         this.width = Integer.parseInt(width);
     }
 
-    public static ImgUploadDto from(ImgUploadRequest request) {
-        return new ImgUploadDto(request.getFile(), request.getHeight(), request.getWidth());
+    public static ImgUpscaleDto from(ImgUpscaleRequest request) {
+        return new ImgUpscaleDto(request.getFile(), request.getHeight(), request.getWidth());
     }
 
     public String getImg() {

@@ -6,14 +6,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-public class ImgUploadResponse {
+public class ImgUpscaleResponse {
     private final int code;
     @JsonProperty("resized_img")
     private final String resizedImg;
     private final String message;
 
     @JsonCreator
-    public ImgUploadResponse(
+    public ImgUpscaleResponse(
             @JsonProperty("code") int code,
             @JsonProperty("resized_img") String resizedImg,
             @JsonProperty("message") String message) {

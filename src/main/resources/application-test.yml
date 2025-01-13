@@ -22,4 +22,6 @@ file:
   dir: /tmp
 ai:
   model:
-    url: dummy
+    url:
+      upscale: dummy
+      uncrop: dummy
