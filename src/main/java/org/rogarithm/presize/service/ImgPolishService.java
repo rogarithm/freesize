@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
@@ -30,18 +29,9 @@ public class ImgPolishService {
     private String maxInMemorySize;
 
     @Autowired
-    private WebClient.Builder webClientBuilder;
+    private WebClient webClient;
 
     public ImgUpscaleResponse uploadImg(ImgUpscaleDto dto) {
-        WebClient webClient = webClientBuilder
-                .exchangeStrategies(ExchangeStrategies
-                        .builder()
-                        .codecs(codecs -> codecs
-                                .defaultCodecs()
-                                .maxInMemorySize(20 * 1024 * 1024))
-                        .build()).
-                build();
-
         WebClient.ResponseSpec retrieve = webClient.post()
                 .uri(upscaleUrl)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -91,15 +81,6 @@ public class ImgPolishService {
 
     @Transactional
     public ImgUncropResponse uncropImg(ImgUncropDto dto) {
-        WebClient webClient = webClientBuilder
-                .exchangeStrategies(ExchangeStrategies
-                        .builder()
-                        .codecs(codecs -> codecs
-                                .defaultCodecs()
-                                .maxInMemorySize(20 * 1024 * 1024))
-                        .build()).
-                build();
-
         WebClient.ResponseSpec retrieve = webClient.post()
                 .uri(uncropUrl)
                 .contentType(MediaType.APPLICATION_JSON)
