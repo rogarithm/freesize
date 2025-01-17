@@ -6,7 +6,7 @@
 ![img](./img/presize-proto.jpg)
 
 ## 접근 가능 url
-- http://ec2-43-200-97-22.ap-northeast-2.compute.amazonaws.com:8080/upload
+- http://ec2-43-200-97-22.ap-northeast-2.compute.amazonaws.com:8080/test/upload
 - 윗쪽 폼은 입력받은 이미지를 같이 받은 너비, 높이 값으로 업스케일한 결과를 보여줌
 - 아랫쪽 폼은 입력받은 이미지를 정사각형 형태로 수정한 결과를 보여줌
 ![form](./img/presize-form.png)
