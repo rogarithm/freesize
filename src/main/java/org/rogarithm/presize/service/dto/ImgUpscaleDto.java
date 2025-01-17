@@ -1,5 +1,6 @@
 package org.rogarithm.presize.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.rogarithm.presize.web.request.ImgUpscaleRequest;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -7,33 +8,31 @@ import java.util.Base64;
 
 public class ImgUpscaleDto {
     private String img;
-    private int height;
-    private int width;
+    @JsonProperty("upscale_ratio")
+    private String upscaleRatio;
 
-    public ImgUpscaleDto(MultipartFile file, String height, String width) {
+    public ImgUpscaleDto(
+            MultipartFile file,
+            @JsonProperty("upscale_ratio") String upscaleRatio
+    ) {
         try {
             this.img = encodeWithPadding(Base64.getEncoder().encodeToString(file.getBytes()));
         } catch (Exception e) {
             throw new RuntimeException("Failed to encode image", e);
         }
-        this.height = Integer.parseInt(height);
-        this.width = Integer.parseInt(width);
+        this.upscaleRatio = upscaleRatio;
     }
 
     public static ImgUpscaleDto from(ImgUpscaleRequest request) {
-        return new ImgUpscaleDto(request.getFile(), request.getHeight(), request.getWidth());
+        return new ImgUpscaleDto(request.getFile(), request.getUpscaleRatio());
     }
 
     public String getImg() {
         return img;
     }
 
-    public int getHeight() {
-        return height;
-    }
-
-    public int getWidth() {
-        return width;
+    public String getUpscaleRatio() {
+        return upscaleRatio;
     }
 
     private String encodeWithPadding(String base64) {

@@ -46,7 +46,7 @@ public class ImgPolishController {
 
     @PostMapping("/upscale")
     public String uploadImg(@ModelAttribute("ImgUpscaleRequest") ImgUpscaleRequest request, RedirectAttributes redirectAttributes) {
-        ImgUpscaleDto from = new ImgUpscaleDto(request.getFile(), request.getHeight(), request.getWidth());
+        ImgUpscaleDto from = ImgUpscaleDto.from(request);
         ImgUpscaleResponse response = service.uploadImg(from);
 
         if (response.isSuccess()) {
@@ -61,7 +61,7 @@ public class ImgPolishController {
 
     @PostMapping("/uncrop")
     public String uncropImg(@ModelAttribute("ImgUncropRequest") ImgUncropRequest request, RedirectAttributes redirectAttributes) {
-        ImgUncropDto from = new ImgUncropDto(request.getFile());
+        ImgUncropDto from = ImgUncropDto.from(request);
         ImgUncropResponse response = service.uncropImg(from);
 
         if (response.isSuccess()) {
