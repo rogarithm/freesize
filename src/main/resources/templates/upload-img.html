@@ -9,14 +9,14 @@
         <h2>이미지 등록 폼</h2>
     </div>
     <h4 class="mb-3">업스케일할 이미지 추가</h4>
-    <form action="/upscale" th:object="${ImgUpscaleRequest}" method="post" enctype="multipart/form-data">
+    <form action="/test/upscale" th:object="${ImgUpscaleRequest}" method="post" enctype="multipart/form-data">
         <ul>비율 <input type="text" th:field="*{upscaleRatio}"></ul>
         <ul>파일 <input type="file" th:field="*{file}"></ul>
         <input type="submit"/>
     </form>
 
     <h4 class="mb-3">정육면체로 만들 이미지 추가</h4>
-    <form action="/uncrop" th:object="${ImgUncropRequest}" method="post" enctype="multipart/form-data">
+    <form action="/test/uncrop" th:object="${ImgUncropRequest}" method="post" enctype="multipart/form-data">
         <ul>비율 <input type="text" th:field="*{targetRatio}"></ul>
         <ul>파일 <input type="file" th:field="*{file}"></ul>
         <input type="submit"/>
