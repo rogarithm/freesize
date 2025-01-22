@@ -8,17 +8,17 @@ import java.util.Base64;
 
 public class ImgUncropResponse {
     private final int code;
-    @JsonProperty("uncrop_img")
-    private final String uncropImg;
+    @JsonProperty("resized_img")
+    private final String resizedImg;
     private final String message;
 
     @JsonCreator
     public ImgUncropResponse(
             @JsonProperty("code") int code,
-            @JsonProperty("uncrop_img") String uncropImg,
+            @JsonProperty("resized_img") String resizedImg,
             @JsonProperty("message") String message) {
         this.code = code;
-        this.uncropImg = uncropImg;
+        this.resizedImg = resizedImg;
         this.message = message;
     }
 
@@ -26,8 +26,8 @@ public class ImgUncropResponse {
         return code;
     }
 
-    public String getUncropImg() {
-        return uncropImg;
+    public String getResizedImg() {
+        return resizedImg;
     }
 
     public String getMessage() {
@@ -35,12 +35,12 @@ public class ImgUncropResponse {
     }
 
     public boolean isSuccess() {
-        return code == 200 && uncropImg != null;
+        return code == 200 && resizedImg != null;
     }
 
     public String getUncropImgAsString() {
-        if (uncropImg != null) {
-            byte[] decodedBytes = Base64.getDecoder().decode(uncropImg);
+        if (resizedImg != null) {
+            byte[] decodedBytes = Base64.getDecoder().decode(resizedImg);
             return new String(decodedBytes, StandardCharsets.UTF_8);
         }
         return null;
