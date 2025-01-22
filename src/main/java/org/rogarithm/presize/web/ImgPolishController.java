@@ -25,13 +25,13 @@ public class ImgPolishController {
     }
 
     @PostMapping("/upscale")
-    public ImgUpscaleResponse uploadImg(@ModelAttribute("ImgUpscaleRequest") ImgUpscaleRequest request) {
+    public ImgUpscaleResponse uploadImg(@ModelAttribute ImgUpscaleRequest request) {
         ImgUpscaleDto from = ImgUpscaleDto.from(request);
         return service.uploadImg(from);
     }
 
     @PostMapping("/uncrop")
-    public ImgUncropResponse uncropImg(@ModelAttribute("ImgUncropRequest") ImgUncropRequest request) {
+    public ImgUncropResponse uncropImg(@ModelAttribute ImgUncropRequest request) {
         ImgUncropDto from = ImgUncropDto.from(request);
         return service.uncropImg(from);
     }

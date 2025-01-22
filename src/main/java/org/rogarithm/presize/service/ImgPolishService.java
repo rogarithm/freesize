@@ -44,9 +44,7 @@ public class ImgPolishService {
         ImgUpscaleResponse imgUpscaleResponse = null;
 
         try {
-            log.debug("Attempting to block response...");
             imgUpscaleResponse = response.block();
-            log.debug("Successfully retrieved response");
         } catch (WebClientResponseException e) {
             log.error("WebClientResponseException: ", e);
             log.error("Full error cause: ", e.getCause());
@@ -60,14 +58,14 @@ public class ImgPolishService {
         }
 
         if (imgUpscaleResponse == null) {
-            throw new RuntimeException("Failed to retrieve a response from the AI model");
+            throw new RuntimeException("Failed to retrieve a upscale response from the AI model");
         }
 
         if (imgUpscaleResponse.isSuccess()) {
             return imgUpscaleResponse;
         }
 
-        throw new RuntimeException("Error from AI model: " + imgUpscaleResponse.getMessage());
+        throw new RuntimeException("Upscale error from AI model: " + imgUpscaleResponse.getMessage());
     }
 
     @Transactional
@@ -84,9 +82,7 @@ public class ImgPolishService {
         ImgUncropResponse imgUncropResponse = null;
 
         try {
-            log.debug("Attempting to block response...");
             imgUncropResponse = response.block();
-            log.debug("Successfully retrieved response");
         } catch (WebClientResponseException e) {
             log.error("WebClientResponseException: ", e);
             log.error("Full error cause: ", e.getCause());
@@ -100,14 +96,14 @@ public class ImgPolishService {
         }
 
         if (imgUncropResponse == null) {
-            throw new RuntimeException("Failed to retrieve a response from the AI model");
+            throw new RuntimeException("Failed to retrieve a uncrop response from the AI model");
         }
 
         if (imgUncropResponse.isSuccess()) {
             return imgUncropResponse;
         }
 
-        throw new RuntimeException("Error from AI model: " + imgUncropResponse.getMessage());
+        throw new RuntimeException("Uncrop error from AI model: " + imgUncropResponse.getMessage());
     }
 
     private String parseSizeToBytes(String size) {
