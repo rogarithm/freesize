@@ -69,7 +69,7 @@ public class ImgPolishPageController {
 
         if (response.isSuccess()) {
             redirectAttributes.addFlashAttribute("originalImg", from.getImg());
-            redirectAttributes.addFlashAttribute("uncropImg", response.getUncropImg());
+            redirectAttributes.addFlashAttribute("uncropImg", response.getResizedImg());
             return "redirect:uncrop";
         } else {
             redirectAttributes.addFlashAttribute("error", "Image processing failed: " + response.getMessage());
