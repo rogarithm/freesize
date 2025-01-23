@@ -25,4 +25,4 @@ logging:
   file:
     name: logs/app.log
   level:
-    root: debug
+    root: info
