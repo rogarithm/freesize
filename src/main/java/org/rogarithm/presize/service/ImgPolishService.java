@@ -2,6 +2,7 @@ package org.rogarithm.presize.service;
 
 import org.rogarithm.presize.service.dto.ImgUncropDto;
 import org.rogarithm.presize.service.dto.ImgUpscaleDto;
+import org.rogarithm.presize.web.response.HealthCheckResponse;
 import org.rogarithm.presize.web.response.ImgUncropResponse;
 import org.rogarithm.presize.web.response.ImgUpscaleResponse;
 import org.slf4j.Logger;
@@ -24,6 +25,8 @@ public class ImgPolishService {
     private String upscaleUrl;
     @Value("${ai.model.url.uncrop}")
     private String uncropUrl;
+    @Value("${ai.model.url.health-check}")
+    private String healthCheckUrl;
     @Value("${spring.codec.max-in-memory-size}")
     private String maxInMemorySize;
 
@@ -44,9 +47,7 @@ public class ImgPolishService {
         ImgUpscaleResponse imgUpscaleResponse = null;
 
         try {
-            log.debug("Attempting to block response...");
             imgUpscaleResponse = response.block();
-            log.debug("Successfully retrieved response");
         } catch (WebClientResponseException e) {
             log.error("WebClientResponseException: ", e);
             log.error("Full error cause: ", e.getCause());
@@ -60,14 +61,14 @@ public class ImgPolishService {
         }
 
         if (imgUpscaleResponse == null) {
-            throw new RuntimeException("Failed to retrieve a response from the AI model");
+            throw new RuntimeException("Failed to retrieve a upscale response from the AI model");
         }
 
         if (imgUpscaleResponse.isSuccess()) {
             return imgUpscaleResponse;
         }
 
-        throw new RuntimeException("Error from AI model: " + imgUpscaleResponse.getMessage());
+        throw new RuntimeException("Upscale error from AI model: " + imgUpscaleResponse.getMessage());
     }
 
     @Transactional
@@ -84,9 +85,7 @@ public class ImgPolishService {
         ImgUncropResponse imgUncropResponse = null;
 
         try {
-            log.debug("Attempting to block response...");
             imgUncropResponse = response.block();
-            log.debug("Successfully retrieved response");
         } catch (WebClientResponseException e) {
             log.error("WebClientResponseException: ", e);
             log.error("Full error cause: ", e.getCause());
@@ -100,14 +99,14 @@ public class ImgPolishService {
         }
 
         if (imgUncropResponse == null) {
-            throw new RuntimeException("Failed to retrieve a response from the AI model");
+            throw new RuntimeException("Failed to retrieve a uncrop response from the AI model");
         }
 
         if (imgUncropResponse.isSuccess()) {
             return imgUncropResponse;
         }
 
-        throw new RuntimeException("Error from AI model: " + imgUncropResponse.getMessage());
+        throw new RuntimeException("Uncrop error from AI model: " + imgUncropResponse.getMessage());
     }
 
     private String parseSizeToBytes(String size) {
@@ -117,5 +116,35 @@ public class ImgPolishService {
             return Integer.toString(Integer.parseInt(size.replace("MB", "").trim()) * 1024 * 1024);
         }
         return size;
+    }
+
+    @Transactional
+    public HealthCheckResponse healthCheck() {
+        WebClient.ResponseSpec retrieve = webClient.post()
+                .uri(healthCheckUrl)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve();
+
+        Mono<HealthCheckResponse> response = retrieve.bodyToMono(HealthCheckResponse.class);
+
+        HealthCheckResponse healthCheckResponse = null;
+
+        try {
+            healthCheckResponse = response.block();
+        } catch (WebClientResponseException e) {
+            log.error("WebClientResponseException: ", e);
+            log.error("Full error cause: ", e.getCause());
+        }
+
+        if (healthCheckResponse == null) {
+            throw new RuntimeException("Failed to retrieve a health check response from the AI model");
+        }
+
+        if (healthCheckResponse.isSuccess()) {
+            return healthCheckResponse;
+        }
+
+        throw new RuntimeException("Health check error from AI model: " + healthCheckResponse.getMessage());
     }
 }

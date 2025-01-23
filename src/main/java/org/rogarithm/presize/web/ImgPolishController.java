@@ -5,6 +5,7 @@ import org.rogarithm.presize.service.dto.ImgUncropDto;
 import org.rogarithm.presize.service.dto.ImgUpscaleDto;
 import org.rogarithm.presize.web.request.ImgUncropRequest;
 import org.rogarithm.presize.web.request.ImgUpscaleRequest;
+import org.rogarithm.presize.web.response.HealthCheckResponse;
 import org.rogarithm.presize.web.response.ImgUncropResponse;
 import org.rogarithm.presize.web.response.ImgUpscaleResponse;
 import org.slf4j.Logger;
@@ -25,14 +26,19 @@ public class ImgPolishController {
     }
 
     @PostMapping("/upscale")
-    public ImgUpscaleResponse uploadImg(@ModelAttribute("ImgUpscaleRequest") ImgUpscaleRequest request) {
+    public ImgUpscaleResponse uploadImg(@ModelAttribute ImgUpscaleRequest request) {
         ImgUpscaleDto from = ImgUpscaleDto.from(request);
         return service.uploadImg(from);
     }
 
     @PostMapping("/uncrop")
-    public ImgUncropResponse uncropImg(@ModelAttribute("ImgUncropRequest") ImgUncropRequest request) {
+    public ImgUncropResponse uncropImg(@ModelAttribute ImgUncropRequest request) {
         ImgUncropDto from = ImgUncropDto.from(request);
         return service.uncropImg(from);
+    }
+
+    @PostMapping("/health-check")
+    public HealthCheckResponse healthCheck() {
+        return service.healthCheck();
     }
 }
