@@ -20,6 +20,7 @@ ai:
     url:
       upscale: ${AI_MODEL_URL_UPSCALE}
       uncrop: ${AI_MODEL_URL_UNCROP}
+      health-check: ${AI_MODEL_URL_HEALTH_CHECK}
 logging:
   file:
     name: logs/app.log
