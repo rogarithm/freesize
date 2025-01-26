@@ -10,8 +10,10 @@ import org.rogarithm.presize.web.response.ImgUncropResponse;
 import org.rogarithm.presize.web.response.ImgUpscaleResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import software.amazon.awssdk.services.s3.S3Client;
 
 @Controller
 @ResponseBody
@@ -19,10 +21,15 @@ import org.springframework.web.bind.annotation.*;
 public class ImgPolishController {
     private static final Logger log = LoggerFactory.getLogger(ImgPolishController.class);
 
-    private final ImgPolishService service;
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
-    public ImgPolishController(ImgPolishService service) {
+    private final ImgPolishService service;
+    private final S3Client s3Client;
+
+    public ImgPolishController(ImgPolishService service, S3Client s3Client) {
         this.service = service;
+        this.s3Client = s3Client;
     }
 
     @PostMapping("/upscale")
