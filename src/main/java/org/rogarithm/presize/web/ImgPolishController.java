@@ -14,9 +14,9 @@ import org.rogarithm.presize.web.response.ImgUpscaleStagingResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
+import java.util.concurrent.CompletableFuture;
 
 @Controller
 @ResponseBody
@@ -62,11 +63,26 @@ public class ImgPolishController {
 
     @PostMapping("/staging/upscale")
     public ImgUpscaleStagingResponse upscaleImgStaging(@ModelAttribute ImgUpscaleRequest request) throws FileUploadException {
+        HealthCheckResponse healthCheckResponse = service.healthCheck();
+
+        if (!healthCheckResponse.isSuccess()) {
+            return new ImgUpscaleStagingResponse(500, "ai model has problem", "no url");
+        }
+
+        upscaleImgAsync(request);
+
+        String fileExtension = ".png";
+        String fileName = "test" + fileExtension;
+        String directoryName = "img/";
+
+        return new ImgUpscaleStagingResponse(200, "wait", "https://" + bucket + "/" + directoryName + fileName);
+    }
+
+    @Async
+    public CompletableFuture<Void> upscaleImgAsync(ImgUpscaleRequest request) throws FileUploadException {
         ImgUpscaleDto dto = ImgUpscaleDto.from(request);
         ImgUpscaleResponse response = service.uploadImg(dto);
         String base64EncodedUpscaleImg = response.getResizedImg();
-
-        MultipartFile file = request.getFile();
 
         String fileExtension = ".png";
         String fileName = "test" + fileExtension;
@@ -83,20 +99,9 @@ public class ImgPolishController {
                             .build(),
                     RequestBody.fromInputStream(inputStream, decodedBytes.length)
             );
-
-            // 파일 업로드 완료 후, 업로드된 파일의 URL 등을 반환 (예를 들면 S3에 업로드한 파일의 URL을 반환)
-            String fileUrl = s3Client.utilities().getUrl(builder -> builder.bucket(bucket).key(directoryName + fileName)).toExternalForm();
-            return new ImgUpscaleStagingResponse("success upload", fileUrl);
+            return new CompletableFuture<>();
         } catch (IOException | S3Exception e) {
             throw new FileUploadException("Error occurred during file upload: " + e.getMessage());
         }
-
-//        HealthCheckResponse healthCheckResponse = service.healthCheck();
-//        if (healthCheckResponse.isSuccess()) {
-//            return new ImgUpscaleResponse(200, "url", "wait");
-//        }
-//
-//        ImgUpscaleDto from = ImgUpscaleDto.from(request);
-//        return service.uploadImg(from);
     }
 }
