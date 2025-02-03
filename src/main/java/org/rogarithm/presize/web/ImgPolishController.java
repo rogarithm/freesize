@@ -7,6 +7,7 @@ import org.rogarithm.presize.service.dto.ImgUncropDto;
 import org.rogarithm.presize.service.dto.ImgUpscaleDto;
 import org.rogarithm.presize.web.request.ImgUncropRequest;
 import org.rogarithm.presize.web.request.ImgUpscaleRequest;
+import org.rogarithm.presize.web.request.ImgUpscaleStagingRequest;
 import org.rogarithm.presize.web.response.HealthCheckResponse;
 import org.rogarithm.presize.web.response.ImgUncropResponse;
 import org.rogarithm.presize.web.response.ImgUpscaleResponse;
@@ -62,7 +63,9 @@ public class ImgPolishController {
     }
 
     @PostMapping("/staging/upscale")
-    public ImgUpscaleStagingResponse upscaleImgStaging(@ModelAttribute ImgUpscaleRequest request) throws FileUploadException {
+    public ImgUpscaleStagingResponse upscaleImgStaging(@ModelAttribute ImgUpscaleStagingRequest request) throws FileUploadException {
+        log.warn(request.getTaskId());
+        log.warn(request.getUpscaleRatio());
         HealthCheckResponse healthCheckResponse = service.healthCheck();
 
         if (!healthCheckResponse.isSuccess()) {
@@ -72,20 +75,20 @@ public class ImgPolishController {
         upscaleImgAsync(request);
 
         String fileExtension = ".png";
-        String fileName = "test" + fileExtension;
+        String fileName = request.getTaskId() + fileExtension;
         String directoryName = "img/";
 
         return new ImgUpscaleStagingResponse(200, "wait", "https://" + bucket + "/" + directoryName + fileName);
     }
 
     @Async
-    public CompletableFuture<Void> upscaleImgAsync(ImgUpscaleRequest request) throws FileUploadException {
-        ImgUpscaleDto dto = ImgUpscaleDto.from(request);
+    public CompletableFuture<Void> upscaleImgAsync(ImgUpscaleStagingRequest request) throws FileUploadException {
+        ImgUpscaleDto dto = ImgUpscaleDto.fromStaging(request);
         ImgUpscaleResponse response = service.uploadImg(dto);
         String base64EncodedUpscaleImg = response.getResizedImg();
 
         String fileExtension = ".png";
-        String fileName = "test" + fileExtension;
+        String fileName = request.getTaskId() + fileExtension;
         String directoryName = "img/";
 
         byte[] decodedBytes = Base64.getDecoder().decode(base64EncodedUpscaleImg);
