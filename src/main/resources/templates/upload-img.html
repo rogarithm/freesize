@@ -21,6 +21,13 @@
         <ul>파일 <input type="file" th:field="*{file}"></ul>
         <input type="submit"/>
     </form>
+
+    <h4 class="mb-3">Polling 방식으로 업스케일할 이미지 추가</h4>
+    <form action="/staging/upscale" th:object="${ImgUpscaleRequest}" method="post" enctype="multipart/form-data">
+        <ul>비율 <input type="text" th:field="*{upscaleRatio}"></ul>
+        <ul>파일 <input type="file" th:field="*{file}"></ul>
+        <input type="submit"/>
+    </form>
 </div>
 </body>
 </html>

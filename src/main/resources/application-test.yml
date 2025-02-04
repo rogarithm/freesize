@@ -18,6 +18,19 @@ spring:
       path: /h2-console #localhost:port/h2-console? ?? ??
   codec:
     max-in-memory-size: 20MB
+  cloud:
+    aws:
+      s3:
+        enabled: false
+cloud:
+  aws:
+    stack: false
+    s3:
+      bucket: dummy
+    region: dummy
+    credentials:
+      accessKey: dummy
+      secretKey: dummy
 file:
   dir: /tmp
 ai:

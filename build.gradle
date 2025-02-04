@@ -27,7 +27,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
-
+	implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.2.1'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0' // swagger 문서 생성
 
 	runtimeOnly 'com.h2database:h2:2.2.224'
