@@ -15,9 +15,11 @@ import org.rogarithm.presize.web.response.ImgUpscaleStagingResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -25,7 +27,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Base64;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Controller
@@ -62,10 +64,14 @@ public class ImgPolishController {
         return service.healthCheck();
     }
 
-    @PostMapping("/staging/upscale")
-    public ImgUpscaleStagingResponse upscaleImgStaging(@ModelAttribute ImgUpscaleStagingRequest request) throws FileUploadException {
-        log.warn(request.getTaskId());
-        log.warn(request.getUpscaleRatio());
+    @PostMapping(value = "/staging/upscale", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ImgUpscaleStagingResponse upscaleImgStaging(
+            @RequestParam("taskId") String taskId,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("upscaleRatio") String upscaleRatio
+    ) throws FileUploadException {
+
+        ImgUpscaleStagingRequest request = new ImgUpscaleStagingRequest(taskId, file, upscaleRatio);
         HealthCheckResponse healthCheckResponse = service.healthCheck();
 
         if (!healthCheckResponse.isSuccess()) {
