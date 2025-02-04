@@ -38,6 +38,8 @@ public class ImgPolishController {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
+    @Value("${cloud.aws.region}")
+    private String region;
 
     private final ImgPolishService service;
     private final S3Client s3Client;
@@ -82,9 +84,9 @@ public class ImgPolishController {
 
         String fileExtension = ".png";
         String fileName = request.getTaskId() + fileExtension;
-        String directoryName = "img/";
+        String directoryName = "img";
 
-        return new ImgUpscaleStagingResponse(200, "wait", "https://" + bucket + "/" + directoryName + fileName);
+        return new ImgUpscaleStagingResponse(200, "wait", "https://" + bucket + ".s3." + region + ".amazonaws.com" + "/" + directoryName + "/" + fileName);
     }
 
     @Async
