@@ -27,6 +27,8 @@ public class ImgPolishPageController {
 
     @GetMapping("/upload")
     public String newFile(Model model, ImgUpscaleRequest upscaleRequest, ImgUncropRequest uncropRequest) {
+        upscaleRequest.setTaskId("x");
+        upscaleRequest.setUpscaleRatio("x2");
         model.addAttribute("ImgUpscaleRequest", upscaleRequest);
         model.addAttribute("ImgUncropRequest", uncropRequest);
         return "upload-img";

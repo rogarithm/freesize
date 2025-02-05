@@ -8,11 +8,9 @@
     <div class="py-5 text-center">
         <h2>이미지 등록 폼</h2>
     </div>
-    <h4 class="mb-3">업스케일할 이미지 추가</h4>
+    <h4 class="mb-3">업스케일할 이미지 추가(url은 x, 비율은 x2로 고정되어 있다)</h4>
     <form action="/test/upscale" th:object="${ImgUpscaleRequest}" method="post" enctype="multipart/form-data">
-        <ul>url <input type="text" th:field="*{taskId}"></ul>
         <ul>파일 <input type="file" th:field="*{file}"></ul>
-        <ul>비율 <input type="text" th:field="*{upscaleRatio}"></ul>
         <input type="submit"/>
     </form>
 
