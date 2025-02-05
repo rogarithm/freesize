@@ -6,7 +6,6 @@ import org.rogarithm.presize.service.ImgUploadService;
 import org.rogarithm.presize.service.dto.ImgUncropDto;
 import org.rogarithm.presize.service.dto.ImgUpscaleDto;
 import org.rogarithm.presize.web.request.ImgUncropRequest;
-import org.rogarithm.presize.web.request.ImgUpscaleRequest;
 import org.rogarithm.presize.web.request.ImgUpscaleStagingRequest;
 import org.rogarithm.presize.web.response.HealthCheckResponse;
 import org.rogarithm.presize.web.response.ImgUncropResponse;
@@ -34,12 +33,6 @@ public class ImgPolishController {
     public ImgPolishController(ImgPolishService polishService, ImgUploadService uploadService) {
         this.polishService = polishService;
         this.uploadService = uploadService;
-    }
-
-    @PostMapping("/upscale")
-    public ImgUpscaleResponse upscaleImg(@ModelAttribute ImgUpscaleRequest request) {
-        ImgUpscaleDto dto = ImgUpscaleDto.from(request);
-        return polishService.upscaleImg(dto);
     }
 
     @PostMapping("/uncrop")

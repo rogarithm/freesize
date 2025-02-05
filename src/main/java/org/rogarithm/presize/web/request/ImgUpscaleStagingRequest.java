@@ -27,4 +27,16 @@ public class ImgUpscaleStagingRequest {
     public String getUpscaleRatio() {
         return upscaleRatio;
     }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
+
+    public void setFile(MultipartFile file) {
+        this.file = file;
+    }
+
+    public void setUpscaleRatio(String upscaleRatio) {
+        this.upscaleRatio = upscaleRatio;
+    }
 }

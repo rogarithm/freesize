@@ -4,17 +4,14 @@ import org.rogarithm.presize.service.ImgPolishService;
 import org.rogarithm.presize.service.dto.ImgUncropDto;
 import org.rogarithm.presize.service.dto.ImgUpscaleDto;
 import org.rogarithm.presize.web.request.ImgUncropRequest;
-import org.rogarithm.presize.web.request.ImgUpscaleRequest;
+import org.rogarithm.presize.web.request.ImgUpscaleStagingRequest;
 import org.rogarithm.presize.web.response.ImgUncropResponse;
 import org.rogarithm.presize.web.response.ImgUpscaleResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -29,8 +26,8 @@ public class ImgPolishPageController {
     }
 
     @GetMapping("/upload")
-    public String newFile(Model model, ImgUpscaleRequest upscaleRequest, ImgUncropRequest uncropRequest) {
-        model.addAttribute("ImgUpscaleRequest", upscaleRequest);
+    public String newFile(Model model, ImgUpscaleStagingRequest upscaleRequest, ImgUncropRequest uncropRequest) {
+        model.addAttribute("ImgUpscaleStagingRequest", upscaleRequest);
         model.addAttribute("ImgUncropRequest", uncropRequest);
         return "upload-img";
     }
@@ -48,8 +45,8 @@ public class ImgPolishPageController {
     }
 
     @PostMapping("/upscale")
-    public String uploadImg(@ModelAttribute("ImgUpscaleRequest") ImgUpscaleRequest request, RedirectAttributes redirectAttributes) {
-        ImgUpscaleDto dto = ImgUpscaleDto.from(request);
+    public String uploadImg(@ModelAttribute("ImgUpscaleStagingRequest") ImgUpscaleStagingRequest request, RedirectAttributes redirectAttributes) {
+        ImgUpscaleDto dto = ImgUpscaleDto.fromStaging(request);
         ImgUpscaleResponse response = service.upscaleImg(dto);
 
         if (response.isSuccess()) {
