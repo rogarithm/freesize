@@ -49,11 +49,11 @@ public class ImgPolishPageController {
 
     @PostMapping("/upscale")
     public String uploadImg(@ModelAttribute("ImgUpscaleRequest") ImgUpscaleRequest request, RedirectAttributes redirectAttributes) {
-        ImgUpscaleDto from = ImgUpscaleDto.from(request);
-        ImgUpscaleResponse response = service.uploadImg(from);
+        ImgUpscaleDto dto = ImgUpscaleDto.from(request);
+        ImgUpscaleResponse response = service.upscaleImg(dto);
 
         if (response.isSuccess()) {
-            redirectAttributes.addFlashAttribute("originalImg", from.getImg());
+            redirectAttributes.addFlashAttribute("originalImg", dto.getImg());
             redirectAttributes.addFlashAttribute("resizedImg", response.getResizedImg());
             return "redirect:upscale";
         } else {
@@ -64,11 +64,11 @@ public class ImgPolishPageController {
 
     @PostMapping("/uncrop")
     public String uncropImg(@ModelAttribute("ImgUncropRequest") ImgUncropRequest request, RedirectAttributes redirectAttributes) {
-        ImgUncropDto from = ImgUncropDto.from(request);
-        ImgUncropResponse response = service.uncropImg(from);
+        ImgUncropDto dto = ImgUncropDto.from(request);
+        ImgUncropResponse response = service.uncropImg(dto);
 
         if (response.isSuccess()) {
-            redirectAttributes.addFlashAttribute("originalImg", from.getImg());
+            redirectAttributes.addFlashAttribute("originalImg", dto.getImg());
             redirectAttributes.addFlashAttribute("uncropImg", response.getResizedImg());
             return "redirect:uncrop";
         } else {

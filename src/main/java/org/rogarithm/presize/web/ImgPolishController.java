@@ -28,29 +28,29 @@ import java.util.concurrent.CompletableFuture;
 public class ImgPolishController {
     private static final Logger log = LoggerFactory.getLogger(ImgPolishController.class);
 
-    private final ImgPolishService service;
+    private final ImgPolishService polishService;
     private final ImgUploadService uploadService;
 
-    public ImgPolishController(ImgPolishService service, ImgUploadService uploadService) {
-        this.service = service;
+    public ImgPolishController(ImgPolishService polishService, ImgUploadService uploadService) {
+        this.polishService = polishService;
         this.uploadService = uploadService;
     }
 
     @PostMapping("/upscale")
-    public ImgUpscaleResponse uploadImg(@ModelAttribute ImgUpscaleRequest request) {
-        ImgUpscaleDto from = ImgUpscaleDto.from(request);
-        return service.uploadImg(from);
+    public ImgUpscaleResponse upscaleImg(@ModelAttribute ImgUpscaleRequest request) {
+        ImgUpscaleDto dto = ImgUpscaleDto.from(request);
+        return polishService.upscaleImg(dto);
     }
 
     @PostMapping("/uncrop")
     public ImgUncropResponse uncropImg(@ModelAttribute ImgUncropRequest request) {
-        ImgUncropDto from = ImgUncropDto.from(request);
-        return service.uncropImg(from);
+        ImgUncropDto dto = ImgUncropDto.from(request);
+        return polishService.uncropImg(dto);
     }
 
     @PostMapping("/health-check")
     public HealthCheckResponse healthCheck() {
-        return service.healthCheck();
+        return polishService.healthCheck();
     }
 
     @PostMapping(value = "/staging/upscale", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -60,7 +60,7 @@ public class ImgPolishController {
             @RequestParam("upscaleRatio") String upscaleRatio
     ) throws FileUploadException {
 
-        HealthCheckResponse healthCheckResponse = service.healthCheck();
+        HealthCheckResponse healthCheckResponse = polishService.healthCheck();
 
         if (!healthCheckResponse.isSuccess()) {
             return new ImgUpscaleStagingResponse(500, "ai model has problem", "no url");
@@ -79,7 +79,7 @@ public class ImgPolishController {
 
     private String processUpscale(ImgUpscaleStagingRequest request) {
         ImgUpscaleDto dto = ImgUpscaleDto.fromStaging(request);
-        ImgUpscaleResponse response = service.uploadImg(dto);
+        ImgUpscaleResponse response = polishService.upscaleImg(dto);
         return response.getResizedImg();
     }
 }
