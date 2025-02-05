@@ -11,10 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -30,6 +27,8 @@ public class ImgPolishPageController {
 
     @GetMapping("/upload")
     public String newFile(Model model, ImgUpscaleRequest upscaleRequest, ImgUncropRequest uncropRequest) {
+        upscaleRequest.setTaskId("x");
+        upscaleRequest.setUpscaleRatio("x2");
         model.addAttribute("ImgUpscaleRequest", upscaleRequest);
         model.addAttribute("ImgUncropRequest", uncropRequest);
         return "upload-img";
@@ -49,11 +48,11 @@ public class ImgPolishPageController {
 
     @PostMapping("/upscale")
     public String uploadImg(@ModelAttribute("ImgUpscaleRequest") ImgUpscaleRequest request, RedirectAttributes redirectAttributes) {
-        ImgUpscaleDto from = ImgUpscaleDto.from(request);
-        ImgUpscaleResponse response = service.uploadImg(from);
+        ImgUpscaleDto dto = ImgUpscaleDto.from(request);
+        ImgUpscaleResponse response = service.upscaleImg(dto);
 
         if (response.isSuccess()) {
-            redirectAttributes.addFlashAttribute("originalImg", from.getImg());
+            redirectAttributes.addFlashAttribute("originalImg", dto.getImg());
             redirectAttributes.addFlashAttribute("resizedImg", response.getResizedImg());
             return "redirect:upscale";
         } else {
@@ -64,11 +63,11 @@ public class ImgPolishPageController {
 
     @PostMapping("/uncrop")
     public String uncropImg(@ModelAttribute("ImgUncropRequest") ImgUncropRequest request, RedirectAttributes redirectAttributes) {
-        ImgUncropDto from = ImgUncropDto.from(request);
-        ImgUncropResponse response = service.uncropImg(from);
+        ImgUncropDto dto = ImgUncropDto.from(request);
+        ImgUncropResponse response = service.uncropImg(dto);
 
         if (response.isSuccess()) {
-            redirectAttributes.addFlashAttribute("originalImg", from.getImg());
+            redirectAttributes.addFlashAttribute("originalImg", dto.getImg());
             redirectAttributes.addFlashAttribute("uncropImg", response.getResizedImg());
             return "redirect:uncrop";
         } else {

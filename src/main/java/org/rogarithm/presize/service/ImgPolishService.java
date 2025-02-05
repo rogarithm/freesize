@@ -34,7 +34,7 @@ public class ImgPolishService {
     private WebClient webClient;
 
     @Transactional
-    public ImgUpscaleResponse uploadImg(ImgUpscaleDto dto) {
+    public ImgUpscaleResponse upscaleImg(ImgUpscaleDto dto) {
         WebClient.ResponseSpec retrieve = webClient.post()
                 .uri(upscaleUrl)
                 .contentType(MediaType.APPLICATION_JSON)
