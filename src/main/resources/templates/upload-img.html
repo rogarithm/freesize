@@ -9,7 +9,7 @@
         <h2>이미지 등록 폼</h2>
     </div>
     <h4 class="mb-3">업스케일할 이미지 추가</h4>
-    <form action="/test/upscale" th:object="${ImgUpscaleStagingRequest}" method="post" enctype="multipart/form-data">
+    <form action="/test/upscale" th:object="${ImgUpscaleRequest}" method="post" enctype="multipart/form-data">
         <ul>url <input type="text" th:field="*{taskId}"></ul>
         <ul>파일 <input type="file" th:field="*{file}"></ul>
         <ul>비율 <input type="text" th:field="*{upscaleRatio}"></ul>

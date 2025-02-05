@@ -2,22 +2,11 @@ package org.rogarithm.presize.service;
 
 import io.awspring.cloud.s3.S3Exception;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
-import org.rogarithm.presize.service.dto.ImgUncropDto;
-import org.rogarithm.presize.service.dto.ImgUpscaleDto;
-import org.rogarithm.presize.web.request.ImgUpscaleStagingRequest;
-import org.rogarithm.presize.web.response.HealthCheckResponse;
-import org.rogarithm.presize.web.response.ImgUncropResponse;
-import org.rogarithm.presize.web.response.ImgUpscaleResponse;
+import org.rogarithm.presize.web.request.ImgUpscaleRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
-import reactor.core.publisher.Mono;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -44,7 +33,7 @@ public class ImgUploadService {
         this.s3Client = s3Client;
     }
 
-    public CompletableFuture<Void> uploadToS3(ImgUpscaleStagingRequest request,
+    public CompletableFuture<Void> uploadToS3(ImgUpscaleRequest request,
                                               String polishedImg
     ) throws FileUploadException {
         String fileExtension = ".png";
@@ -68,7 +57,7 @@ public class ImgUploadService {
         }
     }
 
-    public String makeUrl(ImgUpscaleStagingRequest request) {
+    public String makeUrl(ImgUpscaleRequest request) {
         String fileExtension = ".png";
         String fileName = request.getTaskId() + fileExtension;
         String directoryName = "img";

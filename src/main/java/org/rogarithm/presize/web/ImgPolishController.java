@@ -6,7 +6,7 @@ import org.rogarithm.presize.service.ImgUploadService;
 import org.rogarithm.presize.service.dto.ImgUncropDto;
 import org.rogarithm.presize.service.dto.ImgUpscaleDto;
 import org.rogarithm.presize.web.request.ImgUncropRequest;
-import org.rogarithm.presize.web.request.ImgUpscaleStagingRequest;
+import org.rogarithm.presize.web.request.ImgUpscaleRequest;
 import org.rogarithm.presize.web.response.HealthCheckResponse;
 import org.rogarithm.presize.web.response.ImgUncropResponse;
 import org.rogarithm.presize.web.response.ImgUpscaleResponse;
@@ -46,8 +46,8 @@ public class ImgPolishController {
         return polishService.healthCheck();
     }
 
-    @PostMapping(value = "/staging/upscale", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ImgUpscaleStagingResponse upscaleImgStaging(
+    @PostMapping(value = "/upscale", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ImgUpscaleStagingResponse upscaleImg(
             @RequestParam("taskId") String taskId,
             @RequestParam("file") MultipartFile file,
             @RequestParam("upscaleRatio") String upscaleRatio
@@ -59,19 +59,19 @@ public class ImgPolishController {
             return new ImgUpscaleStagingResponse(500, "ai model has problem", "no url");
         }
 
-        ImgUpscaleStagingRequest request = new ImgUpscaleStagingRequest(taskId, file, upscaleRatio);
+        ImgUpscaleRequest request = new ImgUpscaleRequest(taskId, file, upscaleRatio);
         upscaleImgAsync(request);
         return new ImgUpscaleStagingResponse(200, "wait", uploadService.makeUrl(request));
     }
 
     @Async
-    public CompletableFuture<Void> upscaleImgAsync(ImgUpscaleStagingRequest request) throws FileUploadException {
+    public CompletableFuture<Void> upscaleImgAsync(ImgUpscaleRequest request) throws FileUploadException {
         String upscaledImg = processUpscale(request);
         return uploadService.uploadToS3(request, upscaledImg);
     }
 
-    private String processUpscale(ImgUpscaleStagingRequest request) {
-        ImgUpscaleDto dto = ImgUpscaleDto.fromStaging(request);
+    private String processUpscale(ImgUpscaleRequest request) {
+        ImgUpscaleDto dto = ImgUpscaleDto.from(request);
         ImgUpscaleResponse response = polishService.upscaleImg(dto);
         return response.getResizedImg();
     }

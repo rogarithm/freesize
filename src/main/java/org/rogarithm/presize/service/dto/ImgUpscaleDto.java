@@ -1,7 +1,7 @@
 package org.rogarithm.presize.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.rogarithm.presize.web.request.ImgUpscaleStagingRequest;
+import org.rogarithm.presize.web.request.ImgUpscaleRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Base64;
@@ -23,7 +23,7 @@ public class ImgUpscaleDto {
         this.upscaleRatio = upscaleRatio;
     }
 
-    public static ImgUpscaleDto fromStaging(ImgUpscaleStagingRequest request) {
+    public static ImgUpscaleDto from(ImgUpscaleRequest request) {
         return new ImgUpscaleDto(request.getFile(), request.getUpscaleRatio());
     }
 

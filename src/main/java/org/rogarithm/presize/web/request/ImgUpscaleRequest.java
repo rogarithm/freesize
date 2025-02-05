@@ -2,15 +2,15 @@ package org.rogarithm.presize.web.request;
 
 import org.springframework.web.multipart.MultipartFile;
 
-public class ImgUpscaleStagingRequest {
+public class ImgUpscaleRequest {
     private String taskId;
     private MultipartFile file;
     private String upscaleRatio;
 
-    public ImgUpscaleStagingRequest() {
+    public ImgUpscaleRequest() {
     }
 
-    public ImgUpscaleStagingRequest(String taskId, MultipartFile file, String upscaleRatio) {
+    public ImgUpscaleRequest(String taskId, MultipartFile file, String upscaleRatio) {
         this.taskId = taskId;
         this.file = file;
         this.upscaleRatio = upscaleRatio;
