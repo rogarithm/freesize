@@ -10,7 +10,7 @@ import org.rogarithm.presize.web.request.ImgUpscaleRequest;
 import org.rogarithm.presize.web.response.HealthCheckResponse;
 import org.rogarithm.presize.web.response.ImgUncropResponse;
 import org.rogarithm.presize.web.response.ImgUpscaleResponse;
-import org.rogarithm.presize.web.response.ImgUpscaleStagingResponse;
+import org.rogarithm.presize.web.response.PollingResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -36,7 +36,7 @@ public class ImgPolishController {
     }
 
     @PostMapping("/uncrop")
-    public ImgUpscaleStagingResponse uncropImg(
+    public PollingResponse uncropImg(
             @RequestParam("taskId") String taskId,
             @RequestParam("file") MultipartFile file,
             @RequestParam("targetRatio") String targetRatio
@@ -44,13 +44,13 @@ public class ImgPolishController {
         HealthCheckResponse healthCheckResponse = polishService.healthCheck();
 
         if (!healthCheckResponse.isSuccess()) {
-            return new ImgUpscaleStagingResponse(500, "ai model has problem", "no url");
+            return new PollingResponse(500, "ai model has problem", "no url");
         }
 
         ImgUncropRequest request = new ImgUncropRequest(taskId, file, targetRatio);
         uncropImgAsync(request);
 
-        return new ImgUpscaleStagingResponse(200, "wait", uploadService.makeUncropUrl(request));
+        return new PollingResponse(200, "wait", uploadService.makeUncropUrl(request));
     }
 
     @Async
@@ -71,7 +71,7 @@ public class ImgPolishController {
     }
 
     @PostMapping(value = "/upscale", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ImgUpscaleStagingResponse upscaleImg(
+    public PollingResponse upscaleImg(
             @RequestParam("taskId") String taskId,
             @RequestParam("file") MultipartFile file,
             @RequestParam("upscaleRatio") String upscaleRatio
@@ -80,12 +80,12 @@ public class ImgPolishController {
         HealthCheckResponse healthCheckResponse = polishService.healthCheck();
 
         if (!healthCheckResponse.isSuccess()) {
-            return new ImgUpscaleStagingResponse(500, "ai model has problem", "no url");
+            return new PollingResponse(500, "ai model has problem", "no url");
         }
 
         ImgUpscaleRequest request = new ImgUpscaleRequest(taskId, file, upscaleRatio);
         upscaleImgAsync(request);
-        return new ImgUpscaleStagingResponse(200, "wait", uploadService.makeUrl(request));
+        return new PollingResponse(200, "wait", uploadService.makeUrl(request));
     }
 
     @Async
