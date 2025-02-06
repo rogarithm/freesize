@@ -10,7 +10,7 @@ import org.rogarithm.presize.web.request.ImgUpscaleRequest;
 import org.rogarithm.presize.web.response.HealthCheckResponse;
 import org.rogarithm.presize.web.response.ImgUncropResponse;
 import org.rogarithm.presize.web.response.ImgUpscaleResponse;
-import org.rogarithm.presize.web.response.ImgUpscaleStagingResponse;
+import org.rogarithm.presize.web.response.PollingResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -36,9 +36,33 @@ public class ImgPolishController {
     }
 
     @PostMapping("/uncrop")
-    public ImgUncropResponse uncropImg(@ModelAttribute ImgUncropRequest request) {
+    public PollingResponse uncropImg(
+            @RequestParam("taskId") String taskId,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("targetRatio") String targetRatio
+    ) throws FileUploadException {
+        HealthCheckResponse healthCheckResponse = polishService.healthCheck();
+
+        if (!healthCheckResponse.isSuccess()) {
+            return new PollingResponse(500, "ai model has problem", "no url");
+        }
+
+        ImgUncropRequest request = new ImgUncropRequest(taskId, file, targetRatio);
+        uncropImgAsync(request);
+
+        return new PollingResponse(200, "wait", uploadService.makeUncropUrl(request));
+    }
+
+    @Async
+    public CompletableFuture<Void> uncropImgAsync(ImgUncropRequest request) throws FileUploadException {
+        String upscaledImg = processUncrop(request);
+        return uploadService.uploadUncropToS3(request, upscaledImg);
+    }
+
+    private String processUncrop(ImgUncropRequest request) {
         ImgUncropDto dto = ImgUncropDto.from(request);
-        return polishService.uncropImg(dto);
+        ImgUncropResponse response = polishService.uncropImg(dto);
+        return response.getResizedImg();
     }
 
     @PostMapping("/health-check")
@@ -47,7 +71,7 @@ public class ImgPolishController {
     }
 
     @PostMapping(value = "/upscale", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ImgUpscaleStagingResponse upscaleImg(
+    public PollingResponse upscaleImg(
             @RequestParam("taskId") String taskId,
             @RequestParam("file") MultipartFile file,
             @RequestParam("upscaleRatio") String upscaleRatio
@@ -56,12 +80,12 @@ public class ImgPolishController {
         HealthCheckResponse healthCheckResponse = polishService.healthCheck();
 
         if (!healthCheckResponse.isSuccess()) {
-            return new ImgUpscaleStagingResponse(500, "ai model has problem", "no url");
+            return new PollingResponse(500, "ai model has problem", "no url");
         }
 
         ImgUpscaleRequest request = new ImgUpscaleRequest(taskId, file, upscaleRatio);
         upscaleImgAsync(request);
-        return new ImgUpscaleStagingResponse(200, "wait", uploadService.makeUrl(request));
+        return new PollingResponse(200, "wait", uploadService.makeUrl(request));
     }
 
     @Async

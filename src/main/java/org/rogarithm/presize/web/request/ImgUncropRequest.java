@@ -3,15 +3,21 @@ package org.rogarithm.presize.web.request;
 import org.springframework.web.multipart.MultipartFile;
 
 public class ImgUncropRequest {
+    private String taskId;
     private MultipartFile file;
     private String targetRatio;
 
     public ImgUncropRequest() {
     }
 
-    public ImgUncropRequest(MultipartFile file, String targetRatio) {
+    public ImgUncropRequest(String taskId, MultipartFile file, String targetRatio) {
+        this.taskId = taskId;
         this.file = file;
         this.targetRatio = targetRatio;
+    }
+
+    public String getTaskId() {
+        return taskId;
     }
 
     public MultipartFile getFile() {
@@ -20,6 +26,10 @@ public class ImgUncropRequest {
 
     public String getTargetRatio() {
         return targetRatio;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
     public void setFile(MultipartFile file) {
