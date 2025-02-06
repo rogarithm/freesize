@@ -30,6 +30,9 @@ public class ImgPolishPageController {
         upscaleRequest.setTaskId("x");
         upscaleRequest.setUpscaleRatio("x2");
         model.addAttribute("ImgUpscaleRequest", upscaleRequest);
+
+        uncropRequest.setTaskId("y");
+        uncropRequest.setTargetRatio("1:2");
         model.addAttribute("ImgUncropRequest", uncropRequest);
         return "upload-img";
     }

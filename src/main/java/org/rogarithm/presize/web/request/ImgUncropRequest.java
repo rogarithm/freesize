@@ -28,6 +28,10 @@ public class ImgUncropRequest {
         return targetRatio;
     }
 
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
+
     public void setFile(MultipartFile file) {
         this.file = file;
     }

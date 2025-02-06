@@ -14,9 +14,8 @@
         <input type="submit"/>
     </form>
 
-    <h4 class="mb-3">정육면체로 만들 이미지 추가</h4>
+    <h4 class="mb-3">정육면체로 만들 이미지 추가(url은 y, 비율은 1:2로 고정되어 있다)</h4>
     <form action="/test/uncrop" th:object="${ImgUncropRequest}" method="post" enctype="multipart/form-data">
-        <ul>비율 <input type="text" th:field="*{targetRatio}"></ul>
         <ul>파일 <input type="file" th:field="*{file}"></ul>
         <input type="submit"/>
     </form>
