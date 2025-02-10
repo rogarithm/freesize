@@ -58,9 +58,9 @@ public class ImgUploadService {
         }
     }
 
-    public String makeUrl(ImgUpscaleRequest request) {
+    public String makeUrl(String taskId) {
         String fileExtension = ".png";
-        String fileName = request.getTaskId() + fileExtension;
+        String fileName = taskId + fileExtension;
         String directoryName = "img";
         return "https://" + bucket + ".s3." + region + ".amazonaws.com" + "/" + directoryName + "/" + fileName;
     }
@@ -87,12 +87,5 @@ public class ImgUploadService {
         } catch (IOException | S3Exception e) {
             throw new FileUploadException("Error occurred during file upload: " + e.getMessage());
         }
-    }
-
-    public String makeUncropUrl(ImgUncropRequest request) {
-        String fileExtension = ".png";
-        String fileName = request.getTaskId() + fileExtension;
-        String directoryName = "img";
-        return "https://" + bucket + ".s3." + region + ".amazonaws.com" + "/" + directoryName + "/" + fileName;
     }
 }

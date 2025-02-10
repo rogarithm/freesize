@@ -59,7 +59,7 @@ public class ImgPolishController {
         ImgUncropRequest request = new ImgUncropRequest(taskId, file, targetRatio);
         polishService.uncropImgAsync(request);
 
-        return new PollingResponse(200, "wait", uploadService.makeUncropUrl(request));
+        return new PollingResponse(200, "wait", uploadService.makeUrl(request.getTaskId()));
     }
 
     @PostMapping("/health-check")
@@ -84,7 +84,7 @@ public class ImgPolishController {
 
         ImgUpscaleRequest request = new ImgUpscaleRequest(taskId, file, upscaleRatio);
         polishService.upscaleImgAsync(request);
-        return new PollingResponse(200, "wait", uploadService.makeUrl(request));
+        return new PollingResponse(200, "wait", uploadService.makeUrl(request.getTaskId()));
     }
 
     private void logRequest(final HttpServletRequest httpServletRequest) {
