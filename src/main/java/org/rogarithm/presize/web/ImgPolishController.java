@@ -48,21 +48,9 @@ public class ImgPolishController {
         }
 
         ImgUncropRequest request = new ImgUncropRequest(taskId, file, targetRatio);
-        uncropImgAsync(request);
+        polishService.uncropImgAsync(request);
 
         return new PollingResponse(200, "wait", uploadService.makeUncropUrl(request));
-    }
-
-    @Async
-    public CompletableFuture<Void> uncropImgAsync(ImgUncropRequest request) throws FileUploadException {
-        String upscaledImg = processUncrop(request);
-        return uploadService.uploadUncropToS3(request, upscaledImg);
-    }
-
-    private String processUncrop(ImgUncropRequest request) {
-        ImgUncropDto dto = ImgUncropDto.from(request);
-        ImgUncropResponse response = polishService.uncropImg(dto);
-        return response.getResizedImg();
     }
 
     @PostMapping("/health-check")
@@ -84,19 +72,8 @@ public class ImgPolishController {
         }
 
         ImgUpscaleRequest request = new ImgUpscaleRequest(taskId, file, upscaleRatio);
-        upscaleImgAsync(request);
+        polishService.upscaleImgAsync(request);
         return new PollingResponse(200, "wait", uploadService.makeUrl(request));
     }
 
-    @Async
-    public CompletableFuture<Void> upscaleImgAsync(ImgUpscaleRequest request) throws FileUploadException {
-        String upscaledImg = processUpscale(request);
-        return uploadService.uploadToS3(request, upscaledImg);
-    }
-
-    private String processUpscale(ImgUpscaleRequest request) {
-        ImgUpscaleDto dto = ImgUpscaleDto.from(request);
-        ImgUpscaleResponse response = polishService.upscaleImg(dto);
-        return response.getResizedImg();
-    }
 }
