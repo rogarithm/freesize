@@ -1,7 +1,10 @@
 package org.rogarithm.presize.service;
 
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.rogarithm.presize.service.dto.ImgUncropDto;
 import org.rogarithm.presize.service.dto.ImgUpscaleDto;
+import org.rogarithm.presize.web.request.ImgUncropRequest;
+import org.rogarithm.presize.web.request.ImgUpscaleRequest;
 import org.rogarithm.presize.web.response.HealthCheckResponse;
 import org.rogarithm.presize.web.response.ImgUncropResponse;
 import org.rogarithm.presize.web.response.ImgUpscaleResponse;
@@ -10,11 +13,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
+
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class ImgPolishService {
@@ -32,6 +38,36 @@ public class ImgPolishService {
 
     @Autowired
     private WebClient webClient;
+
+    private final ImgUploadService uploadService;
+
+    public ImgPolishService(ImgUploadService uploadService) {
+        this.uploadService = uploadService;
+    }
+
+    @Async
+    public CompletableFuture<Void> uncropImgAsync(ImgUncropRequest request) throws FileUploadException {
+        String upscaledImg = processUncrop(request);
+        return uploadService.uploadUncropToS3(request, upscaledImg);
+    }
+
+    private String processUncrop(ImgUncropRequest request) {
+        ImgUncropDto dto = ImgUncropDto.from(request);
+        ImgUncropResponse response = uncropImg(dto);
+        return response.getResizedImg();
+    }
+
+    @Async
+    public CompletableFuture<Void> upscaleImgAsync(ImgUpscaleRequest request) throws FileUploadException {
+        String upscaledImg = processUpscale(request);
+        return uploadService.uploadToS3(request, upscaledImg);
+    }
+
+    private String processUpscale(ImgUpscaleRequest request) {
+        ImgUpscaleDto dto = ImgUpscaleDto.from(request);
+        ImgUpscaleResponse response = upscaleImg(dto);
+        return response.getResizedImg();
+    }
 
     @Transactional
     public ImgUpscaleResponse upscaleImg(ImgUpscaleDto dto) {
