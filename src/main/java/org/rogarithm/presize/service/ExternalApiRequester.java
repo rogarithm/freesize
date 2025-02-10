@@ -3,6 +3,7 @@ package org.rogarithm.presize.service;
 import org.rogarithm.presize.service.dto.ImgSquareDto;
 import org.rogarithm.presize.service.dto.ImgUncropDto;
 import org.rogarithm.presize.service.dto.ImgUpscaleDto;
+import org.rogarithm.presize.web.response.HealthCheckResponse;
 import org.rogarithm.presize.web.response.ImgSquareResponse;
 import org.rogarithm.presize.web.response.ImgUncropResponse;
 import org.rogarithm.presize.web.response.ImgUpscaleResponse;
@@ -22,6 +23,8 @@ public class ExternalApiRequester {
 
     private static final Logger log = LoggerFactory.getLogger(ExternalApiRequester.class);
 
+    @Value("${ai.model.url.health-check}")
+    private String healthCheckUrl;
     @Value("${ai.model.url.upscale}")
     private String upscaleUrl;
     @Value("${ai.model.url.uncrop}")
@@ -33,6 +36,36 @@ public class ExternalApiRequester {
 
     @Autowired
     private WebClient webClient;
+
+    @Transactional
+    public HealthCheckResponse healthCheck() {
+        WebClient.ResponseSpec retrieve = webClient.post()
+                .uri(healthCheckUrl)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve();
+
+        Mono<HealthCheckResponse> response = retrieve.bodyToMono(HealthCheckResponse.class);
+
+        HealthCheckResponse healthCheckResponse = null;
+
+        try {
+            healthCheckResponse = response.block();
+        } catch (WebClientResponseException e) {
+            log.error("WebClientResponseException: ", e);
+            log.error("Full error cause: ", e.getCause());
+        }
+
+        if (healthCheckResponse == null) {
+            throw new RuntimeException("Failed to retrieve a health check response from the AI model");
+        }
+
+        if (healthCheckResponse.isSuccess()) {
+            return healthCheckResponse;
+        }
+
+        throw new RuntimeException("Health check error from AI model: " + healthCheckResponse.getMessage());
+    }
 
     @Transactional
     public ImgUpscaleResponse upscaleImg(ImgUpscaleDto dto) {
