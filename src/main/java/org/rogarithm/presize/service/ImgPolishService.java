@@ -48,7 +48,7 @@ public class ImgPolishService {
     @Async
     public CompletableFuture<Void> uncropImgAsync(ImgUncropRequest request) throws FileUploadException {
         String upscaledImg = processUncrop(request);
-        return uploadService.uploadUncropToS3(request, upscaledImg);
+        return uploadService.uploadUncropImgToS3(request, upscaledImg);
     }
 
     private String processUncrop(ImgUncropRequest request) {
@@ -60,7 +60,7 @@ public class ImgPolishService {
     @Async
     public CompletableFuture<Void> upscaleImgAsync(ImgUpscaleRequest request) throws FileUploadException {
         String upscaledImg = processUpscale(request);
-        return uploadService.uploadToS3(request, upscaledImg);
+        return uploadService.uploadUpscaleImgToS3(request, upscaledImg);
     }
 
     private String processUpscale(ImgUpscaleRequest request) {

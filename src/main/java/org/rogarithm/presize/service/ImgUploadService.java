@@ -34,15 +34,15 @@ public class ImgUploadService {
         this.s3Client = s3Client;
     }
 
-    public CompletableFuture<Void> uploadToS3(ImgUpscaleRequest request,
-                                              String polishedImg
+    public CompletableFuture<Void> uploadUpscaleImgToS3(ImgUpscaleRequest request,
+                                                        String polishedImg
     ) throws FileUploadException {
         String fileName = makeFullFileName(request.getTaskId());
         return processUpload(fileName, polishedImg);
     }
 
-    public CompletableFuture<Void> uploadUncropToS3(ImgUncropRequest request,
-                                                    String polishedImg
+    public CompletableFuture<Void> uploadUncropImgToS3(ImgUncropRequest request,
+                                                       String polishedImg
     ) throws FileUploadException {
         String fileName = makeFullFileName(request.getTaskId());
         return processUpload(fileName, polishedImg);
