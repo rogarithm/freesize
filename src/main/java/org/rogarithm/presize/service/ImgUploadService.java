@@ -34,14 +34,29 @@ public class ImgUploadService {
         this.s3Client = s3Client;
     }
 
-    public CompletableFuture<Void> uploadToS3(ImgUpscaleRequest request,
-                                              String polishedImg
+    public CompletableFuture<Void> uploadUpscaleImgToS3(ImgUpscaleRequest request,
+                                                        String polishedImg
     ) throws FileUploadException {
-        String fileExtension = ".png";
-        String fileName = request.getTaskId() + fileExtension;
-        String directoryName = "img/";
+        String fileName = makeFullFileName(request.getTaskId());
+        return processUpload(fileName, polishedImg);
+    }
 
+    public CompletableFuture<Void> uploadUncropImgToS3(ImgUncropRequest request,
+                                                       String polishedImg
+    ) throws FileUploadException {
+        String fileName = makeFullFileName(request.getTaskId());
+        return processUpload(fileName, polishedImg);
+    }
+
+    private String makeFullFileName(String taskId) {
+        String fileExtension = ".png";
+        return taskId + fileExtension;
+    }
+
+    private CompletableFuture<Void> processUpload(String fileName, String polishedImg) throws FileUploadException {
+        String directoryName = "img/";
         byte[] decodedBytes = Base64.getDecoder().decode(polishedImg);
+
         try (InputStream inputStream = new ByteArrayInputStream(decodedBytes)) {
             s3Client.putObject(
                     PutObjectRequest.builder()
@@ -52,46 +67,16 @@ public class ImgUploadService {
                             .build(),
                     RequestBody.fromInputStream(inputStream, decodedBytes.length)
             );
+
             return new CompletableFuture<>();
         } catch (IOException | S3Exception e) {
             throw new FileUploadException("Error occurred during file upload: " + e.getMessage());
         }
     }
 
-    public String makeUrl(ImgUpscaleRequest request) {
+    public String makeUrl(String taskId) {
         String fileExtension = ".png";
-        String fileName = request.getTaskId() + fileExtension;
-        String directoryName = "img";
-        return "https://" + bucket + ".s3." + region + ".amazonaws.com" + "/" + directoryName + "/" + fileName;
-    }
-
-    public CompletableFuture<Void> uploadUncropToS3(ImgUncropRequest request,
-                                              String polishedImg
-    ) throws FileUploadException {
-        String fileExtension = ".png";
-        String fileName = request.getTaskId() + fileExtension;
-        String directoryName = "img/";
-
-        byte[] decodedBytes = Base64.getDecoder().decode(polishedImg);
-        try (InputStream inputStream = new ByteArrayInputStream(decodedBytes)) {
-            s3Client.putObject(
-                    PutObjectRequest.builder()
-                            .bucket(bucket)
-                            .key(directoryName + fileName)
-                            .contentType("image/png")
-                            .contentLength(Long.valueOf(decodedBytes.length))
-                            .build(),
-                    RequestBody.fromInputStream(inputStream, decodedBytes.length)
-            );
-            return new CompletableFuture<>();
-        } catch (IOException | S3Exception e) {
-            throw new FileUploadException("Error occurred during file upload: " + e.getMessage());
-        }
-    }
-
-    public String makeUncropUrl(ImgUncropRequest request) {
-        String fileExtension = ".png";
-        String fileName = request.getTaskId() + fileExtension;
+        String fileName = taskId + fileExtension;
         String directoryName = "img";
         return "https://" + bucket + ".s3." + region + ".amazonaws.com" + "/" + directoryName + "/" + fileName;
     }
