@@ -1,5 +1,6 @@
 package org.rogarithm.presize.web;
 
+import org.rogarithm.presize.service.ExternalApiRequester;
 import org.rogarithm.presize.service.ImgPolishService;
 import org.rogarithm.presize.service.dto.ImgUncropDto;
 import org.rogarithm.presize.service.dto.ImgUpscaleDto;
@@ -20,9 +21,11 @@ public class ImgPolishPageController {
     private static final Logger log = LoggerFactory.getLogger(ImgPolishPageController.class);
 
     private final ImgPolishService service;
+    private final ExternalApiRequester externalApiRequester;
 
-    public ImgPolishPageController(ImgPolishService service) {
+    public ImgPolishPageController(ImgPolishService service, ExternalApiRequester externalApiRequester) {
         this.service = service;
+        this.externalApiRequester = externalApiRequester;
     }
 
     @GetMapping("/upload")
@@ -52,7 +55,7 @@ public class ImgPolishPageController {
     @PostMapping("/upscale")
     public String uploadImg(@ModelAttribute("ImgUpscaleRequest") ImgUpscaleRequest request, RedirectAttributes redirectAttributes) {
         ImgUpscaleDto dto = ImgUpscaleDto.from(request);
-        ImgUpscaleResponse response = service.upscaleImg(dto);
+        ImgUpscaleResponse response = externalApiRequester.upscaleImg(dto);
 
         if (response.isSuccess()) {
             redirectAttributes.addFlashAttribute("originalImg", dto.getImg());
