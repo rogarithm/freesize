@@ -1,6 +1,8 @@
 package org.rogarithm.presize.service;
 
+import org.rogarithm.presize.service.dto.ImgUncropDto;
 import org.rogarithm.presize.service.dto.ImgUpscaleDto;
+import org.rogarithm.presize.web.response.ImgUncropResponse;
 import org.rogarithm.presize.web.response.ImgUpscaleResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +22,8 @@ public class ExternalApiRequester {
 
     @Value("${ai.model.url.upscale}")
     private String upscaleUrl;
+    @Value("${ai.model.url.uncrop}")
+    private String uncropUrl;
     @Value("${spring.codec.max-in-memory-size}")
     private String maxInMemorySize;
 
@@ -62,6 +66,44 @@ public class ExternalApiRequester {
         }
 
         throw new RuntimeException("Upscale error from AI model: " + imgUpscaleResponse.getMessage());
+    }
+
+    @Transactional
+    public ImgUncropResponse uncropImg(ImgUncropDto dto) {
+        WebClient.ResponseSpec retrieve = webClient.post()
+                .uri(uncropUrl)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(dto)
+                .retrieve();
+
+        Mono<ImgUncropResponse> response = retrieve.bodyToMono(ImgUncropResponse.class);
+
+        ImgUncropResponse imgUncropResponse = null;
+
+        try {
+            imgUncropResponse = response.block();
+        } catch (WebClientResponseException e) {
+            log.error("WebClientResponseException: ", e);
+            log.error("Full error cause: ", e.getCause());
+            String errorMsg = e.getCause().getMessage();
+            if (errorMsg.split(":").length >= 2) {
+                String problematicSize = errorMsg.split(":")[1].replaceAll(" ", "");
+                log.error("Current response's buffer size({}) is higher than current max codec size({}).\n" +
+                                "To resolve, edit max codec size higher than {} both in WebClient configuration and application properties!",
+                        problematicSize, parseSizeToBytes(maxInMemorySize), problematicSize);
+            }
+        }
+
+        if (imgUncropResponse == null) {
+            throw new RuntimeException("Failed to retrieve a uncrop response from the AI model");
+        }
+
+        if (imgUncropResponse.isSuccess()) {
+            return imgUncropResponse;
+        }
+
+        throw new RuntimeException("Uncrop error from AI model: " + imgUncropResponse.getMessage());
     }
 
     private String parseSizeToBytes(String size) {

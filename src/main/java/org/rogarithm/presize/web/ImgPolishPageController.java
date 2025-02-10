@@ -70,7 +70,7 @@ public class ImgPolishPageController {
     @PostMapping("/uncrop")
     public String uncropImg(@ModelAttribute("ImgUncropRequest") ImgUncropRequest request, RedirectAttributes redirectAttributes) {
         ImgUncropDto dto = ImgUncropDto.from(request);
-        ImgUncropResponse response = service.uncropImg(dto);
+        ImgUncropResponse response = externalApiRequester.uncropImg(dto);
 
         if (response.isSuccess()) {
             redirectAttributes.addFlashAttribute("originalImg", dto.getImg());

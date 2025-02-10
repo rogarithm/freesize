@@ -30,8 +30,6 @@ public class ImgPolishService {
 
     private static final Logger log = LoggerFactory.getLogger(ImgPolishService.class);
 
-    @Value("${ai.model.url.uncrop}")
-    private String uncropUrl;
     @Value("${ai.model.url.squareUrl}")
     private String squareUrl;
     @Value("${ai.model.url.health-check}")
@@ -58,7 +56,7 @@ public class ImgPolishService {
 
     private String processUncrop(ImgUncropRequest request) {
         ImgUncropDto dto = ImgUncropDto.from(request);
-        ImgUncropResponse response = uncropImg(dto);
+        ImgUncropResponse response = externalApiRequester.uncropImg(dto);
         return response.getResizedImg();
     }
 
@@ -84,45 +82,6 @@ public class ImgPolishService {
         ImgSquareDto dto = ImgSquareDto.from(request);
         ImgSquareResponse response = squareImg(dto);
         return response.getResizedImg();
-    }
-
-
-    @Transactional
-    public ImgUncropResponse uncropImg(ImgUncropDto dto) {
-        WebClient.ResponseSpec retrieve = webClient.post()
-                .uri(uncropUrl)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .bodyValue(dto)
-                .retrieve();
-
-        Mono<ImgUncropResponse> response = retrieve.bodyToMono(ImgUncropResponse.class);
-
-        ImgUncropResponse imgUncropResponse = null;
-
-        try {
-            imgUncropResponse = response.block();
-        } catch (WebClientResponseException e) {
-            log.error("WebClientResponseException: ", e);
-            log.error("Full error cause: ", e.getCause());
-            String errorMsg = e.getCause().getMessage();
-            if (errorMsg.split(":").length >= 2) {
-                String problematicSize = errorMsg.split(":")[1].replaceAll(" ", "");
-                log.error("Current response's buffer size({}) is higher than current max codec size({}).\n" +
-                                "To resolve, edit max codec size higher than {} both in WebClient configuration and application properties!",
-                        problematicSize, parseSizeToBytes(maxInMemorySize), problematicSize);
-            }
-        }
-
-        if (imgUncropResponse == null) {
-            throw new RuntimeException("Failed to retrieve a uncrop response from the AI model");
-        }
-
-        if (imgUncropResponse.isSuccess()) {
-            return imgUncropResponse;
-        }
-
-        throw new RuntimeException("Uncrop error from AI model: " + imgUncropResponse.getMessage());
     }
 
     @Transactional
