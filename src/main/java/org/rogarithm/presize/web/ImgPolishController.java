@@ -5,27 +5,25 @@ import jakarta.servlet.http.Part;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.rogarithm.presize.service.ImgPolishService;
 import org.rogarithm.presize.service.ImgUploadService;
-import org.rogarithm.presize.service.dto.ImgUncropDto;
-import org.rogarithm.presize.service.dto.ImgUpscaleDto;
+import org.rogarithm.presize.web.request.ImgSquareRequest;
 import org.rogarithm.presize.web.request.ImgUncropRequest;
 import org.rogarithm.presize.web.request.ImgUpscaleRequest;
 import org.rogarithm.presize.web.response.HealthCheckResponse;
-import org.rogarithm.presize.web.response.ImgUncropResponse;
-import org.rogarithm.presize.web.response.ImgUpscaleResponse;
 import org.rogarithm.presize.web.response.PollingResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 @Controller
 @ResponseBody
@@ -84,6 +82,26 @@ public class ImgPolishController {
 
         ImgUpscaleRequest request = new ImgUpscaleRequest(taskId, file, upscaleRatio);
         polishService.upscaleImgAsync(request);
+        return new PollingResponse(200, "wait", uploadService.makeUrl(request.getTaskId()));
+    }
+
+    @PostMapping(value = "/square", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public PollingResponse squareImg(
+            HttpServletRequest httpServletRequest,
+            @RequestParam("taskId") String taskId,
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("targetRes") String targetRes
+    ) throws FileUploadException {
+        logRequest(httpServletRequest);
+
+        HealthCheckResponse healthCheckResponse = polishService.healthCheck();
+
+        if (!healthCheckResponse.isSuccess()) {
+            return new PollingResponse(500, "ai model has problem", "no url");
+        }
+
+        ImgSquareRequest request = new ImgSquareRequest(taskId, file, targetRes);
+        polishService.squareImgAsync(request);
         return new PollingResponse(200, "wait", uploadService.makeUrl(request.getTaskId()));
     }
 

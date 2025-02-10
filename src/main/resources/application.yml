@@ -29,6 +29,7 @@ ai:
     url:
       upscale: ${AI_MODEL_URL_UPSCALE}
       uncrop: ${AI_MODEL_URL_UNCROP}
+      square: ${AI_MODEL_URL_SQUARE}
       health-check: ${AI_MODEL_URL_HEALTH_CHECK}
 logging:
   file:
