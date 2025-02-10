@@ -30,12 +30,8 @@ public class ImgPolishService {
 
     private static final Logger log = LoggerFactory.getLogger(ImgPolishService.class);
 
-    @Value("${ai.model.url.squareUrl}")
-    private String squareUrl;
     @Value("${ai.model.url.health-check}")
     private String healthCheckUrl;
-    @Value("${spring.codec.max-in-memory-size}")
-    private String maxInMemorySize;
 
     @Autowired
     private WebClient webClient;
@@ -80,55 +76,8 @@ public class ImgPolishService {
 
     private String processSquare(ImgSquareRequest request) {
         ImgSquareDto dto = ImgSquareDto.from(request);
-        ImgSquareResponse response = squareImg(dto);
+        ImgSquareResponse response = externalApiRequester.squareImg(dto);
         return response.getResizedImg();
-    }
-
-    @Transactional
-    public ImgSquareResponse squareImg(ImgSquareDto dto) {
-        WebClient.ResponseSpec retrieve = webClient.post()
-                .uri(squareUrl)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .bodyValue(dto)
-                .retrieve();
-
-        Mono<ImgSquareResponse> response = retrieve.bodyToMono(ImgSquareResponse.class);
-
-        ImgSquareResponse imgSquareResponse = null;
-
-        try {
-            imgSquareResponse = response.block();
-        } catch (WebClientResponseException e) {
-            log.error("WebClientResponseException: ", e);
-            log.error("Full error cause: ", e.getCause());
-            String errorMsg = e.getCause().getMessage();
-            if (errorMsg.split(":").length >= 2) {
-                String problematicSize = errorMsg.split(":")[1].replaceAll(" ", "");
-                log.error("Current response's buffer size({}) is higher than current max codec size({}).\n" +
-                                "To resolve, edit max codec size higher than {} both in WebClient configuration and application properties!",
-                        problematicSize, parseSizeToBytes(maxInMemorySize), problematicSize);
-            }
-        }
-
-        if (imgSquareResponse == null) {
-            throw new RuntimeException("Failed to retrieve a uncrop response from the AI model");
-        }
-
-        if (imgSquareResponse.isSuccess()) {
-            return imgSquareResponse;
-        }
-
-        throw new RuntimeException("Uncrop error from AI model: " + imgSquareResponse.getMessage());
-    }
-
-    private String parseSizeToBytes(String size) {
-        if (size.endsWith("KB")) {
-            return Integer.toString(Integer.parseInt(size.replace("KB", "").trim()) * 1024);
-        } else if (size.endsWith("MB")) {
-            return Integer.toString(Integer.parseInt(size.replace("MB", "").trim()) * 1024 * 1024);
-        }
-        return size;
     }
 
     @Transactional

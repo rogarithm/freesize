@@ -1,7 +1,9 @@
 package org.rogarithm.presize.service;
 
+import org.rogarithm.presize.service.dto.ImgSquareDto;
 import org.rogarithm.presize.service.dto.ImgUncropDto;
 import org.rogarithm.presize.service.dto.ImgUpscaleDto;
+import org.rogarithm.presize.web.response.ImgSquareResponse;
 import org.rogarithm.presize.web.response.ImgUncropResponse;
 import org.rogarithm.presize.web.response.ImgUpscaleResponse;
 import org.slf4j.Logger;
@@ -24,6 +26,8 @@ public class ExternalApiRequester {
     private String upscaleUrl;
     @Value("${ai.model.url.uncrop}")
     private String uncropUrl;
+    @Value("${ai.model.url.squareUrl}")
+    private String squareUrl;
     @Value("${spring.codec.max-in-memory-size}")
     private String maxInMemorySize;
 
@@ -104,6 +108,44 @@ public class ExternalApiRequester {
         }
 
         throw new RuntimeException("Uncrop error from AI model: " + imgUncropResponse.getMessage());
+    }
+
+    @Transactional
+    public ImgSquareResponse squareImg(ImgSquareDto dto) {
+        WebClient.ResponseSpec retrieve = webClient.post()
+                .uri(squareUrl)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(dto)
+                .retrieve();
+
+        Mono<ImgSquareResponse> response = retrieve.bodyToMono(ImgSquareResponse.class);
+
+        ImgSquareResponse imgSquareResponse = null;
+
+        try {
+            imgSquareResponse = response.block();
+        } catch (WebClientResponseException e) {
+            log.error("WebClientResponseException: ", e);
+            log.error("Full error cause: ", e.getCause());
+            String errorMsg = e.getCause().getMessage();
+            if (errorMsg.split(":").length >= 2) {
+                String problematicSize = errorMsg.split(":")[1].replaceAll(" ", "");
+                log.error("Current response's buffer size({}) is higher than current max codec size({}).\n" +
+                                "To resolve, edit max codec size higher than {} both in WebClient configuration and application properties!",
+                        problematicSize, parseSizeToBytes(maxInMemorySize), problematicSize);
+            }
+        }
+
+        if (imgSquareResponse == null) {
+            throw new RuntimeException("Failed to retrieve a uncrop response from the AI model");
+        }
+
+        if (imgSquareResponse.isSuccess()) {
+            return imgSquareResponse;
+        }
+
+        throw new RuntimeException("Uncrop error from AI model: " + imgSquareResponse.getMessage());
     }
 
     private String parseSizeToBytes(String size) {
