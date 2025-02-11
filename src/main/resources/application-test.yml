@@ -38,4 +38,5 @@ ai:
     url:
       upscale: dummy
       uncrop: dummy
+      square: dummy
       health-check: dummy

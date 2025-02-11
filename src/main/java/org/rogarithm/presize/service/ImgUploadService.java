@@ -2,6 +2,7 @@ package org.rogarithm.presize.service;
 
 import io.awspring.cloud.s3.S3Exception;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
+import org.rogarithm.presize.web.request.ImgSquareRequest;
 import org.rogarithm.presize.web.request.ImgUncropRequest;
 import org.rogarithm.presize.web.request.ImgUpscaleRequest;
 import org.slf4j.Logger;
@@ -42,6 +43,13 @@ public class ImgUploadService {
     }
 
     public CompletableFuture<Void> uploadUncropImgToS3(ImgUncropRequest request,
+                                                       String polishedImg
+    ) throws FileUploadException {
+        String fileName = makeFullFileName(request.getTaskId());
+        return processUpload(fileName, polishedImg);
+    }
+
+    public CompletableFuture<Void> uploadSquareImgToS3(ImgSquareRequest request,
                                                        String polishedImg
     ) throws FileUploadException {
         String fileName = makeFullFileName(request.getTaskId());
