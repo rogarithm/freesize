@@ -29,7 +29,7 @@ public class ExternalApiRequester {
     private String upscaleUrl;
     @Value("${ai.model.url.uncrop}")
     private String uncropUrl;
-    @Value("${ai.model.url.squareUrl}")
+    @Value("${ai.model.url.square}")
     private String squareUrl;
     @Value("${spring.codec.max-in-memory-size}")
     private String maxInMemorySize;
