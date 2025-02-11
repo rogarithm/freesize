@@ -54,6 +54,8 @@ public class ImgPolishPageController {
 
     @PostMapping("/upscale")
     public String uploadImg(@ModelAttribute("ImgUpscaleRequest") ImgUpscaleRequest request, RedirectAttributes redirectAttributes) {
+        request.setTaskId("x");
+        request.setUpscaleRatio("x2");
         ImgUpscaleDto dto = ImgUpscaleDto.from(request);
         ImgUpscaleResponse response = externalApiRequester.upscaleImg(dto);
 
@@ -69,6 +71,8 @@ public class ImgPolishPageController {
 
     @PostMapping("/uncrop")
     public String uncropImg(@ModelAttribute("ImgUncropRequest") ImgUncropRequest request, RedirectAttributes redirectAttributes) {
+        request.setTaskId("y");
+        request.setTargetRatio("1:2");
         ImgUncropDto dto = ImgUncropDto.from(request);
         ImgUncropResponse response = externalApiRequester.uncropImg(dto);
 
