@@ -41,10 +41,10 @@ public class ImgPolishController {
 
     @PostMapping("/uncrop")
     public PollingResponse uncropImg(
-            HttpServletRequest httpServletRequest,
             @RequestParam("taskId") String taskId,
             @RequestParam("file") MultipartFile file,
-            @RequestParam("targetRatio") String targetRatio
+            @RequestParam("targetRatio") String targetRatio,
+            HttpServletRequest httpServletRequest
     ) throws FileUploadException {
         logRequest(httpServletRequest);
 
@@ -67,10 +67,10 @@ public class ImgPolishController {
 
     @PostMapping(value = "/upscale", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public PollingResponse upscaleImg(
-            HttpServletRequest httpServletRequest,
             @RequestParam("taskId") String taskId,
             @RequestParam("file") MultipartFile file,
-            @RequestParam("upscaleRatio") String upscaleRatio
+            @RequestParam("upscaleRatio") String upscaleRatio,
+            HttpServletRequest httpServletRequest
     ) throws FileUploadException {
         logRequest(httpServletRequest);
 
@@ -87,10 +87,10 @@ public class ImgPolishController {
 
     @PostMapping(value = "/square", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public PollingResponse squareImg(
-            HttpServletRequest httpServletRequest,
             @RequestParam("taskId") String taskId,
             @RequestParam("file") MultipartFile file,
-            @RequestParam("targetRes") String targetRes
+            @RequestParam("targetRes") String targetRes,
+            HttpServletRequest httpServletRequest
     ) throws FileUploadException {
         logRequest(httpServletRequest);
 
