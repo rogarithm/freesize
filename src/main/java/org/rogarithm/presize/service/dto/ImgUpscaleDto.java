@@ -1,6 +1,7 @@
 package org.rogarithm.presize.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.rogarithm.presize.service.TempFileStoreManager;
 import org.rogarithm.presize.web.request.ImgUpscaleRequest;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,9 +17,15 @@ public class ImgUpscaleDto {
             @JsonProperty("upscale_ratio") String upscaleRatio
     ) {
         try {
-            this.img = encodeWithPadding(Base64.getEncoder().encodeToString(file.getBytes()));
+            byte[] fileBytes = file.getBytes();
+
+            TempFileStoreManager tempFileStoreManager = new TempFileStoreManager();
+            tempFileStoreManager.store(fileBytes, file.getOriginalFilename());
+
+            // Base64 인코딩
+            this.img = encodeWithPadding(Base64.getEncoder().encodeToString(fileBytes));
         } catch (Exception e) {
-            throw new RuntimeException("Failed to encode image", e);
+            throw new RuntimeException("ImgUpscaleDto: Failed to encode image", e);
         }
         this.upscaleRatio = upscaleRatio;
     }
