@@ -7,7 +7,6 @@ import org.rogarithm.presize.service.TempFileStoreManager;
 import org.rogarithm.presize.web.request.ImgUpscaleRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Base64;
 
@@ -19,14 +18,12 @@ public class ImgUpscaleDto {
     private String upscaleRatio;
 
     public ImgUpscaleDto(
-            MultipartFile file,
+            byte[] fileBytes,
             @JsonProperty("upscale_ratio") String upscaleRatio
     ) {
         try {
-            byte[] fileBytes = file.getBytes();
-
             TempFileStoreManager tempFileStoreManager = new TempFileStoreManager();
-            tempFileStoreManager.store(fileBytes, file.getOriginalFilename());
+            tempFileStoreManager.store(fileBytes, "temp"); //file.getOriginalFilename());
 
             // Base64 인코딩
             this.img = encodeWithPadding(Base64.getEncoder().encodeToString(fileBytes));
@@ -38,7 +35,7 @@ public class ImgUpscaleDto {
     }
 
     public static ImgUpscaleDto from(ImgUpscaleRequest request) {
-        return new ImgUpscaleDto(request.getFile(), request.getUpscaleRatio());
+        return new ImgUpscaleDto(request.getFileBytes(), request.getUpscaleRatio());
     }
 
     public String getImg() {
