@@ -71,7 +71,7 @@ public class ImgPolishController {
             @RequestParam("file") MultipartFile file,
             @RequestParam("upscaleRatio") String upscaleRatio,
             HttpServletRequest httpServletRequest
-    ) throws FileUploadException {
+    ) {
         logRequest(httpServletRequest);
 
         HealthCheckResponse healthCheckResponse = polishService.healthCheck();

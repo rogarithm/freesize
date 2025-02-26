@@ -1,7 +1,8 @@
 package org.rogarithm.presize.service;
 
 import io.awspring.cloud.s3.S3Exception;
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
+import org.rogarithm.presize.config.ErrorCode;
+import org.rogarithm.presize.exception.S3FileUploadFailException;
 import org.rogarithm.presize.web.request.ImgSquareRequest;
 import org.rogarithm.presize.web.request.ImgUncropRequest;
 import org.rogarithm.presize.web.request.ImgUpscaleRequest;
@@ -37,21 +38,21 @@ public class ImgUploadService {
 
     public CompletableFuture<Void> uploadUpscaleImgToS3(ImgUpscaleRequest request,
                                                         String polishedImg
-    ) throws FileUploadException {
+    ) {
         String fileName = makeFullFileName(request.getTaskId());
         return processUpload(fileName, polishedImg);
     }
 
     public CompletableFuture<Void> uploadUncropImgToS3(ImgUncropRequest request,
                                                        String polishedImg
-    ) throws FileUploadException {
+    ) {
         String fileName = makeFullFileName(request.getTaskId());
         return processUpload(fileName, polishedImg);
     }
 
     public CompletableFuture<Void> uploadSquareImgToS3(ImgSquareRequest request,
                                                        String polishedImg
-    ) throws FileUploadException {
+    ) {
         String fileName = makeFullFileName(request.getTaskId());
         return processUpload(fileName, polishedImg);
     }
@@ -61,7 +62,7 @@ public class ImgUploadService {
         return taskId + fileExtension;
     }
 
-    private CompletableFuture<Void> processUpload(String fileName, String polishedImg) throws FileUploadException {
+    private CompletableFuture<Void> processUpload(String fileName, String polishedImg) {
         String directoryName = "img/";
         byte[] decodedBytes = Base64.getDecoder().decode(polishedImg);
 
@@ -78,7 +79,8 @@ public class ImgUploadService {
 
             return new CompletableFuture<>();
         } catch (IOException | S3Exception e) {
-            throw new FileUploadException("Error occurred during file upload: " + e.getMessage());
+            log.error(e.getMessage());
+            throw new S3FileUploadFailException(ErrorCode.SERVER_FAULT); // "Error occurred during file upload: " + e.getMessage()
         }
     }
 

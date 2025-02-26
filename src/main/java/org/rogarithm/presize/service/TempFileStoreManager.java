@@ -1,5 +1,8 @@
 package org.rogarithm.presize.service;
 
+import org.rogarithm.presize.config.ErrorCode;
+import org.rogarithm.presize.exception.StoreTempFileFailException;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -20,7 +23,7 @@ public class TempFileStoreManager {
 
         BufferedImage image = ImageIO.read(new ByteArrayInputStream(fileBytes));
         if (image == null) {
-            throw new RuntimeException("Invalid image file");
+            throw new StoreTempFileFailException(ErrorCode.SERVER_FAULT); // "Invalid image file"
         }
         Path imgPath = dirPath.resolve(originalFilename);
         ImageIO.write(image, "png", imgPath.toFile());

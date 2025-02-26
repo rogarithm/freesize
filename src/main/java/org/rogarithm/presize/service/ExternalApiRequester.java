@@ -1,5 +1,7 @@
 package org.rogarithm.presize.service;
 
+import org.rogarithm.presize.config.ErrorCode;
+import org.rogarithm.presize.exception.AiModelRequestFailException;
 import org.rogarithm.presize.service.dto.ImgSquareDto;
 import org.rogarithm.presize.service.dto.ImgUncropDto;
 import org.rogarithm.presize.service.dto.ImgUpscaleDto;
@@ -57,14 +59,14 @@ public class ExternalApiRequester {
         }
 
         if (healthCheckResponse == null) {
-            throw new RuntimeException("Failed to retrieve a health check response from the AI model");
+            throw new AiModelRequestFailException(ErrorCode.SERVER_FAULT); // "Failed to retrieve a health check response from the AI model"
         }
 
         if (healthCheckResponse.isSuccess()) {
             return healthCheckResponse;
         }
 
-        throw new RuntimeException("Health check error from AI model: " + healthCheckResponse.getMessage());
+        throw new AiModelRequestFailException(ErrorCode.SERVER_FAULT); // "Health check error from AI model: " + healthCheckResponse.getMessage()
     }
 
     @Transactional
@@ -95,14 +97,14 @@ public class ExternalApiRequester {
         }
 
         if (imgUpscaleResponse == null) {
-            throw new RuntimeException("Failed to retrieve a upscale response from the AI model");
+            throw new AiModelRequestFailException(ErrorCode.SERVER_FAULT); // "Failed to retrieve a upscale response from the AI model"
         }
 
         if (imgUpscaleResponse.isSuccess()) {
             return imgUpscaleResponse;
         }
 
-        throw new RuntimeException("Upscale error from AI model: " + imgUpscaleResponse.getMessage());
+        throw new AiModelRequestFailException(ErrorCode.SERVER_FAULT); // "Upscale error from AI model: " + imgUpscaleResponse.getMessage()
     }
 
     @Transactional
@@ -133,14 +135,14 @@ public class ExternalApiRequester {
         }
 
         if (imgUncropResponse == null) {
-            throw new RuntimeException("Failed to retrieve a uncrop response from the AI model");
+            throw new AiModelRequestFailException(ErrorCode.SERVER_FAULT); // "Failed to retrieve a uncrop response from the AI model"
         }
 
         if (imgUncropResponse.isSuccess()) {
             return imgUncropResponse;
         }
 
-        throw new RuntimeException("Uncrop error from AI model: " + imgUncropResponse.getMessage());
+        throw new AiModelRequestFailException(ErrorCode.SERVER_FAULT); // "Uncrop error from AI model: " + imgUncropResponse.getMessage()
     }
 
     @Transactional
@@ -171,14 +173,14 @@ public class ExternalApiRequester {
         }
 
         if (imgSquareResponse == null) {
-            throw new RuntimeException("Failed to retrieve a uncrop response from the AI model");
+            throw new AiModelRequestFailException(ErrorCode.SERVER_FAULT); // "Failed to retrieve a uncrop response from the AI model"
         }
 
         if (imgSquareResponse.isSuccess()) {
             return imgSquareResponse;
         }
 
-        throw new RuntimeException("Uncrop error from AI model: " + imgSquareResponse.getMessage());
+        throw new AiModelRequestFailException(ErrorCode.SERVER_FAULT); // "Uncrop error from AI model: " + imgSquareResponse.getMessage()
     }
 
     private String parseSizeToBytes(String size) {

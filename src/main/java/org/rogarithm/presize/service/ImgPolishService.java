@@ -44,14 +44,8 @@ public class ImgPolishService {
     }
 
     @Async
-    public CompletableFuture<Void> upscaleImgAsync(ImgUpscaleRequest request) throws FileUploadException {
-        String upscaledImg = null;
-        try {
-            upscaledImg = processUpscale(request);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-
+    public CompletableFuture<Void> upscaleImgAsync(ImgUpscaleRequest request) {
+        String upscaledImg = processUpscale(request);
         return uploadService.uploadUpscaleImgToS3(request, upscaledImg);
     }
 
