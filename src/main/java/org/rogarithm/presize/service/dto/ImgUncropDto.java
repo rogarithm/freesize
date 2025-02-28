@@ -1,6 +1,8 @@
 package org.rogarithm.presize.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.rogarithm.presize.config.ErrorCode;
+import org.rogarithm.presize.exception.AiModelRequestMakingFailException;
 import org.rogarithm.presize.web.request.ImgUncropRequest;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,7 +17,7 @@ public class ImgUncropDto {
         try {
             this.img = Base64.getEncoder().encodeToString(file.getBytes());
         } catch (Exception e) {
-            throw new RuntimeException("Failed to encode image", e);
+            throw new AiModelRequestMakingFailException(ErrorCode.SERVER_FAULT); // "Failed to encode image", e
         }
         this.targetRatio = targetRatio;
     }

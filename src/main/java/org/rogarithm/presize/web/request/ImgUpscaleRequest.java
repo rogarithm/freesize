@@ -1,18 +1,26 @@
 package org.rogarithm.presize.web.request;
 
+import org.rogarithm.presize.config.ErrorCode;
+import org.rogarithm.presize.exception.AiModelRequestMakingFailException;
 import org.springframework.web.multipart.MultipartFile;
 
 public class ImgUpscaleRequest {
     private String taskId;
-    private MultipartFile file;
+    private byte[] fileBytes;
     private String upscaleRatio;
 
     public ImgUpscaleRequest() {
     }
 
     public ImgUpscaleRequest(String taskId, MultipartFile file, String upscaleRatio) {
+        try {
+            byte[] fileBytes = file.getBytes();
+            this.fileBytes = fileBytes;
+        } catch (Exception e) {
+            throw new AiModelRequestMakingFailException(ErrorCode.SERVER_FAULT);
+        }
+
         this.taskId = taskId;
-        this.file = file;
         this.upscaleRatio = upscaleRatio;
     }
 
@@ -20,8 +28,8 @@ public class ImgUpscaleRequest {
         return taskId;
     }
 
-    public MultipartFile getFile() {
-        return file;
+    public byte[] getFileBytes() {
+        return fileBytes;
     }
 
     public String getUpscaleRatio() {
@@ -32,8 +40,8 @@ public class ImgUpscaleRequest {
         this.taskId = taskId;
     }
 
-    public void setFile(MultipartFile file) {
-        this.file = file;
+    public void setFileBytes(byte[] fileBytes) {
+        this.fileBytes = fileBytes;
     }
 
     public void setUpscaleRatio(String upscaleRatio) {
