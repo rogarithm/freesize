@@ -2,7 +2,6 @@ package org.rogarithm.presize.web.request;
 
 import org.rogarithm.presize.config.ErrorCode;
 import org.rogarithm.presize.exception.AiModelRequestMakingFailException;
-import org.rogarithm.presize.service.TempFileStoreManager;
 import org.springframework.web.multipart.MultipartFile;
 
 public class ImgUpscaleRequest {
@@ -17,9 +16,6 @@ public class ImgUpscaleRequest {
         try {
             byte[] fileBytes = file.getBytes();
             this.fileBytes = fileBytes;
-
-            TempFileStoreManager tempFileStoreManager = new TempFileStoreManager();
-            tempFileStoreManager.store(fileBytes, file.getOriginalFilename());
         } catch (Exception e) {
             throw new AiModelRequestMakingFailException(ErrorCode.SERVER_FAULT);
         }
