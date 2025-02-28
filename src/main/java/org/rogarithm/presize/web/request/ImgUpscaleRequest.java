@@ -16,6 +16,7 @@ public class ImgUpscaleRequest {
     public ImgUpscaleRequest(String taskId, MultipartFile file, String upscaleRatio) {
         try {
             byte[] fileBytes = file.getBytes();
+            this.fileBytes = fileBytes;
 
             TempFileStoreManager tempFileStoreManager = new TempFileStoreManager();
             tempFileStoreManager.store(fileBytes, file.getOriginalFilename());
