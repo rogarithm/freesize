@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
@@ -39,7 +38,6 @@ public class ExternalApiRequester {
     @Autowired
     private WebClient webClient;
 
-    @Transactional
     public HealthCheckResponse healthCheck() {
         WebClient.ResponseSpec retrieve = webClient.post()
                 .uri(healthCheckUrl)
@@ -69,7 +67,6 @@ public class ExternalApiRequester {
         throw new AiModelRequestFailException(ErrorCode.SERVER_FAULT); // "Health check error from AI model: " + healthCheckResponse.getMessage()
     }
 
-    @Transactional
     public ImgUpscaleResponse upscaleImg(ImgUpscaleDto dto) {
         WebClient.ResponseSpec retrieve = webClient.post()
                 .uri(upscaleUrl)
@@ -107,7 +104,6 @@ public class ExternalApiRequester {
         throw new AiModelRequestFailException(ErrorCode.SERVER_FAULT); // "Upscale error from AI model: " + imgUpscaleResponse.getMessage()
     }
 
-    @Transactional
     public ImgUncropResponse uncropImg(ImgUncropDto dto) {
         WebClient.ResponseSpec retrieve = webClient.post()
                 .uri(uncropUrl)
@@ -145,7 +141,6 @@ public class ExternalApiRequester {
         throw new AiModelRequestFailException(ErrorCode.SERVER_FAULT); // "Uncrop error from AI model: " + imgUncropResponse.getMessage()
     }
 
-    @Transactional
     public ImgSquareResponse squareImg(ImgSquareDto dto) {
         WebClient.ResponseSpec retrieve = webClient.post()
                 .uri(squareUrl)
