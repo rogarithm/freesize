@@ -46,7 +46,7 @@ public class ImgPolishService {
     @Async
     public CompletableFuture<Void> upscaleImgAsync(ImgUpscaleRequest request) {
         String upscaledImg = processUpscale(request);
-        return uploadService.uploadUpscaleImgToS3(request, upscaledImg);
+        return null; //uploadService.uploadUpscaleImgToS3(request, upscaledImg);
     }
 
     private String processUpscale(ImgUpscaleRequest request) {
