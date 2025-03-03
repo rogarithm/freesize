@@ -1,8 +1,6 @@
 package org.rogarithm.presize.service;
 
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
-import org.rogarithm.presize.config.ErrorCode;
-import org.rogarithm.presize.exception.StoreTempFileFailException;
 import org.rogarithm.presize.service.dto.ImgSquareDto;
 import org.rogarithm.presize.service.dto.ImgUncropDto;
 import org.rogarithm.presize.service.dto.ImgUpscaleDto;
@@ -18,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -37,13 +34,6 @@ public class ImgPolishService {
     @Async
     public CompletableFuture<Void> uncropImgAsync(ImgUncropRequest request) {
         CompletableFuture<Void> voidCompletableFuture = processUncrop(request).thenAcceptAsync(result -> {
-            byte[] bytes = result.getResizedImg().getBytes();
-            TempFileStoreManager tfsm = new TempFileStoreManager();
-            try {
-                tfsm.store(bytes, request.getOriginalFileName());
-            } catch (IOException e) {
-                throw new StoreTempFileFailException(ErrorCode.SERVER_FAULT);
-            }
             uploadService.uploadUncropImgToS3(request, result.getResizedImg());
         });
         return voidCompletableFuture;
@@ -58,13 +48,6 @@ public class ImgPolishService {
     @Async
     public CompletableFuture<Void> upscaleImgAsync(ImgUpscaleRequest request) {
         CompletableFuture<Void> voidCompletableFuture = processUpscale(request).thenAccept(result -> {
-            byte[] bytes = result.getResizedImg().getBytes();
-            TempFileStoreManager tfsm = new TempFileStoreManager();
-            try {
-                tfsm.store(bytes, request.getOriginalFileName());
-            } catch (IOException e) {
-                throw new StoreTempFileFailException(ErrorCode.SERVER_FAULT);
-            }
             uploadService.uploadUpscaleImgToS3(request, result.getResizedImg());
         });
         return voidCompletableFuture;
