@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImgUncropRequest {
     private String taskId;
     private byte[] fileBytes;
+    private String originalFileName;
     private String targetRatio;
 
     public ImgUncropRequest() {
@@ -21,6 +22,7 @@ public class ImgUncropRequest {
         }
 
         this.taskId = taskId;
+        this.originalFileName = file.getOriginalFilename();
         this.targetRatio = targetRatio;
     }
 
@@ -30,6 +32,10 @@ public class ImgUncropRequest {
 
     public byte[] getFileBytes() {
         return fileBytes;
+    }
+
+    public String getOriginalFileName() {
+        return originalFileName;
     }
 
     public String getTargetRatio() {
@@ -42,6 +48,10 @@ public class ImgUncropRequest {
 
     public void setFileBytes(byte[] fileBytes) {
         this.fileBytes = fileBytes;
+    }
+
+    public void setOriginalFileName(String originalFileName) {
+        this.originalFileName = originalFileName;
     }
 
     public void setTargetRatio(String targetRatio) {

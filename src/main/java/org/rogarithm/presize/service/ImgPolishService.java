@@ -35,15 +35,24 @@ public class ImgPolishService {
     }
 
     @Async
-    public CompletableFuture<Void> uncropImgAsync(ImgUncropRequest request) throws FileUploadException {
-        String upscaledImg = processUncrop(request);
-        return uploadService.uploadUncropImgToS3(request, upscaledImg);
+    public CompletableFuture<Void> uncropImgAsync(ImgUncropRequest request) {
+        CompletableFuture<Void> voidCompletableFuture = processUncrop(request).thenAcceptAsync(result -> {
+            byte[] bytes = result.getResizedImg().getBytes();
+            TempFileStoreManager tfsm = new TempFileStoreManager();
+            try {
+                tfsm.store(bytes, request.getOriginalFileName());
+            } catch (IOException e) {
+                throw new StoreTempFileFailException(ErrorCode.SERVER_FAULT);
+            }
+            uploadService.uploadUncropImgToS3(request, result.getResizedImg());
+        });
+        return voidCompletableFuture;
     }
 
-    private String processUncrop(ImgUncropRequest request) {
+    private CompletableFuture<ImgUncropResponse> processUncrop(ImgUncropRequest request) {
         ImgUncropDto dto = ImgUncropDto.from(request);
-        ImgUncropResponse response = externalApiRequester.uncropImg(dto);
-        return response.getResizedImg();
+        return externalApiRequester.uncropImg(dto)
+                .toFuture();
     }
 
     @Async
