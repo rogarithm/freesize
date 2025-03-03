@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.rogarithm.presize.config.ErrorCode;
 import org.rogarithm.presize.exception.AiModelRequestMakingFailException;
 import org.rogarithm.presize.web.request.ImgUncropRequest;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Base64;
 
@@ -13,9 +12,9 @@ public class ImgUncropDto {
     @JsonProperty("target_ratio")
     private String targetRatio;
 
-    public ImgUncropDto(MultipartFile file, String targetRatio) {
+    public ImgUncropDto(byte[] fileBytes, String targetRatio) {
         try {
-            this.img = Base64.getEncoder().encodeToString(file.getBytes());
+            this.img = Base64.getEncoder().encodeToString(fileBytes);
         } catch (Exception e) {
             throw new AiModelRequestMakingFailException(ErrorCode.SERVER_FAULT); // "Failed to encode image", e
         }
@@ -23,7 +22,7 @@ public class ImgUncropDto {
     }
 
     public static ImgUncropDto from(ImgUncropRequest request) {
-        return new ImgUncropDto(request.getFile(), request.getTargetRatio());
+        return new ImgUncropDto(request.getFileBytes(), request.getTargetRatio());
     }
 
     public String getImg() {
