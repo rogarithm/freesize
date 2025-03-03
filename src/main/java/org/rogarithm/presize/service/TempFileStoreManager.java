@@ -9,6 +9,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Base64;
 import java.util.Objects;
 
 public class TempFileStoreManager {
@@ -21,7 +22,9 @@ public class TempFileStoreManager {
         Path dirPath = Path.of("/tmp/imgs");
         Files.createDirectories(dirPath);
 
-        BufferedImage image = ImageIO.read(new ByteArrayInputStream(fileBytes));
+        byte[] decodedFileBytes = Base64.getDecoder().decode(fileBytes);
+
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(decodedFileBytes));
         if (image == null) {
             throw new StoreTempFileFailException(ErrorCode.SERVER_FAULT); // "Invalid image file"
         }
