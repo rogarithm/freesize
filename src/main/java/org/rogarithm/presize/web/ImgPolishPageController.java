@@ -3,16 +3,17 @@ package org.rogarithm.presize.web;
 import org.rogarithm.presize.service.ExternalApiRequester;
 import org.rogarithm.presize.service.ImgPolishService;
 import org.rogarithm.presize.service.dto.ImgUncropDto;
-import org.rogarithm.presize.service.dto.ImgUpscaleDto;
 import org.rogarithm.presize.web.request.ImgUncropRequest;
 import org.rogarithm.presize.web.request.ImgUpscaleRequest;
 import org.rogarithm.presize.web.response.ImgUncropResponse;
-import org.rogarithm.presize.web.response.ImgUpscaleResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -50,23 +51,6 @@ public class ImgPolishPageController {
     public String showUncropResult(@ModelAttribute("uncropImg") String uncropImg, Model model) {
         model.addAttribute("uncropImg", uncropImg);
         return "uncrop-result";
-    }
-
-    @PostMapping("/upscale")
-    public String uploadImg(@ModelAttribute("ImgUpscaleRequest") ImgUpscaleRequest request, RedirectAttributes redirectAttributes) {
-        request.setTaskId("x");
-        request.setUpscaleRatio("x2");
-        ImgUpscaleDto dto = ImgUpscaleDto.from(request);
-        ImgUpscaleResponse response = externalApiRequester.upscaleImg(dto);
-
-        if (response.isSuccess()) {
-            redirectAttributes.addFlashAttribute("originalImg", dto.getImg());
-            redirectAttributes.addFlashAttribute("resizedImg", response.getResizedImg());
-            return "redirect:upscale";
-        } else {
-            redirectAttributes.addFlashAttribute("error", "Image processing failed: " + response.getMessage());
-            return "redirect:upload";
-        }
     }
 
     @PostMapping("/uncrop")

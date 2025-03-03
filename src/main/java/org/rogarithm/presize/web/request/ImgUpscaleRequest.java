@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImgUpscaleRequest {
     private String taskId;
     private byte[] fileBytes;
+    private String originalFileName;
     private String upscaleRatio;
 
     public ImgUpscaleRequest() {
@@ -21,6 +22,7 @@ public class ImgUpscaleRequest {
         }
 
         this.taskId = taskId;
+        this.originalFileName = file.getOriginalFilename();
         this.upscaleRatio = upscaleRatio;
     }
 
@@ -30,6 +32,10 @@ public class ImgUpscaleRequest {
 
     public byte[] getFileBytes() {
         return fileBytes;
+    }
+
+    public String getOriginalFileName() {
+        return originalFileName;
     }
 
     public String getUpscaleRatio() {
@@ -42,6 +48,10 @@ public class ImgUpscaleRequest {
 
     public void setFileBytes(byte[] fileBytes) {
         this.fileBytes = fileBytes;
+    }
+
+    public void setOriginalFileName(String originalFileName) {
+        this.originalFileName = originalFileName;
     }
 
     public void setUpscaleRatio(String upscaleRatio) {
