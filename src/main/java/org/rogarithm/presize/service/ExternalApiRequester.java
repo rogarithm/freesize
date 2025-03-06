@@ -89,41 +89,26 @@ public class ExternalApiRequester {
                 });
     }
 
-    public ImgUncropResponse uncropImg(ImgUncropDto dto) {
-        WebClient.ResponseSpec retrieve = webClient.post()
+    public Mono<ImgUncropResponse> uncropImg(ImgUncropDto dto) {
+        return webClient.post()
                 .uri(uncropUrl)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
-                .retrieve();
-
-        Mono<ImgUncropResponse> response = retrieve.bodyToMono(ImgUncropResponse.class);
-
-        ImgUncropResponse imgUncropResponse = null;
-
-        try {
-            imgUncropResponse = response.block();
-        } catch (WebClientResponseException e) {
-            log.error("WebClientResponseException: ", e);
-            log.error("Full error cause: ", e.getCause());
-            String errorMsg = e.getCause().getMessage();
-            if (errorMsg.split(":").length >= 2) {
-                String problematicSize = errorMsg.split(":")[1].replaceAll(" ", "");
-                log.error("Current response's buffer size({}) is higher than current max codec size({}).\n" +
-                                "To resolve, edit max codec size higher than {} both in WebClient configuration and application properties!",
-                        problematicSize, parseSizeToBytes(maxInMemorySize), problematicSize);
-            }
-        }
-
-        if (imgUncropResponse == null) {
-            throw new AiModelRequestFailException(ErrorCode.SERVER_FAULT); // "Failed to retrieve a uncrop response from the AI model"
-        }
-
-        if (imgUncropResponse.isSuccess()) {
-            return imgUncropResponse;
-        }
-
-        throw new AiModelRequestFailException(ErrorCode.SERVER_FAULT); // "Uncrop error from AI model: " + imgUncropResponse.getMessage()
+                .retrieve()
+                .bodyToMono(ImgUncropResponse.class)
+                .onErrorMap(WebClientResponseException.class, e -> {
+                    log.error("WebClientResponseException: ", e);
+                    log.error("Full error cause: ", e.getCause());
+                    String errorMsg = e.getCause().getMessage();
+                    if (errorMsg.split(":").length >= 2) {
+                        String problematicSize = errorMsg.split(":")[1].replaceAll(" ", "");
+                        log.error("Current response's buffer size({}) is higher than current max codec size({}).\n" +
+                                        "To resolve, edit max codec size higher than {} both in WebClient configuration and application properties!",
+                                problematicSize, parseSizeToBytes(maxInMemorySize), problematicSize);
+                    }
+                    throw new AiModelRequestFailException(ErrorCode.SERVER_FAULT); // "Uncrop error from AI model: " + imgUncropResponse.getMessage()
+                });
     }
 
     public ImgSquareResponse squareImg(ImgSquareDto dto) {
