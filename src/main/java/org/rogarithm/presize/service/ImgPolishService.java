@@ -1,6 +1,5 @@
 package org.rogarithm.presize.service;
 
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.rogarithm.presize.service.dto.ImgSquareDto;
 import org.rogarithm.presize.service.dto.ImgUncropDto;
 import org.rogarithm.presize.service.dto.ImgUpscaleDto;
@@ -60,15 +59,17 @@ public class ImgPolishService {
     }
 
     @Async
-    public CompletableFuture<Void> squareImgAsync(ImgSquareRequest request) throws FileUploadException {
-        String upscaledImg = processSquare(request);
-        return uploadService.uploadSquareImgToS3(request, upscaledImg);
+    public CompletableFuture<Void> squareImgAsync(ImgSquareRequest request) {
+        CompletableFuture<Void> voidCompletableFuture = processSquare(request).thenAccept(result -> {
+            uploadService.uploadSquareImgToS3(request, result.getResizedImg());
+        });
+        return voidCompletableFuture;
     }
 
-    private String processSquare(ImgSquareRequest request) {
+    private CompletableFuture<ImgSquareResponse> processSquare(ImgSquareRequest request) {
         ImgSquareDto dto = ImgSquareDto.from(request);
-        ImgSquareResponse response = externalApiRequester.squareImg(dto);
-        return response.getResizedImg();
+        return externalApiRequester.squareImg(dto)
+                .toFuture();
     }
 
     public HealthCheckResponse healthCheck() {

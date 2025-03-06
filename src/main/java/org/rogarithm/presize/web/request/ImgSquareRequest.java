@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImgSquareRequest {
     private String taskId;
     private byte[] fileBytes;
+    private String originalFileName;
     private String targetRes;
 
     public ImgSquareRequest() {
@@ -21,6 +22,7 @@ public class ImgSquareRequest {
         }
 
         this.taskId = taskId;
+        this.originalFileName = file.getOriginalFilename();
         this.targetRes = targetRes;
     }
 
@@ -30,6 +32,10 @@ public class ImgSquareRequest {
 
     public byte[] getFileBytes() {
         return fileBytes;
+    }
+
+    public String getOriginalFileName() {
+        return originalFileName;
     }
 
     public String getTargetRes() {
@@ -42,6 +48,10 @@ public class ImgSquareRequest {
 
     public void setFileBytes(byte[] fileBytes) {
         this.fileBytes = fileBytes;
+    }
+
+    public void setOriginalFileName(String originalFileName) {
+        this.originalFileName = originalFileName;
     }
 
     public void setTargetRes(String targetRes) {
