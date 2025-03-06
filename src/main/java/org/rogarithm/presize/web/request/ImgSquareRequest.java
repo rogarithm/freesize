@@ -1,18 +1,26 @@
 package org.rogarithm.presize.web.request;
 
+import org.rogarithm.presize.config.ErrorCode;
+import org.rogarithm.presize.exception.AiModelRequestMakingFailException;
 import org.springframework.web.multipart.MultipartFile;
 
 public class ImgSquareRequest {
     private String taskId;
-    private MultipartFile file;
+    private byte[] fileBytes;
     private String targetRes;
 
     public ImgSquareRequest() {
     }
 
     public ImgSquareRequest(String taskId, MultipartFile file, String targetRes) {
+        try {
+            byte[] fileBytes = file.getBytes();
+            this.fileBytes = fileBytes;
+        } catch (Exception e) {
+            throw new AiModelRequestMakingFailException(ErrorCode.SERVER_FAULT);
+        }
+
         this.taskId = taskId;
-        this.file = file;
         this.targetRes = targetRes;
     }
 
@@ -20,8 +28,8 @@ public class ImgSquareRequest {
         return taskId;
     }
 
-    public MultipartFile getFile() {
-        return file;
+    public byte[] getFileBytes() {
+        return fileBytes;
     }
 
     public String getTargetRes() {
@@ -32,8 +40,8 @@ public class ImgSquareRequest {
         this.taskId = taskId;
     }
 
-    public void setFile(MultipartFile file) {
-        this.file = file;
+    public void setFileBytes(byte[] fileBytes) {
+        this.fileBytes = fileBytes;
     }
 
     public void setTargetRes(String targetRes) {
